@@ -1,0 +1,83 @@
+#include "client.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <stdlib.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <iostream>
+client::~client()
+{
+  PORT=0;
+  sock=0;
+
+
+}
+
+ 
+client::client(int p, char addr[])
+{
+  PORT =p;
+  sock=0;
+  init(addr);
+}
+void client::init(char addr[])
+{
+  struct sockaddr_in serv_addr;
+  //  struct sockaddr_in address;
+
+  memset(&serv_addr, '0', sizeof(serv_addr));
+  bool res=false;
+  res = create_socket();
+  res = connect_socket(serv_addr, addr);
+ 
+  
+}
+bool client::create_socket()
+{
+  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+      printf("\n Socket creation error \n");
+      return false;
+    }
+  //RAISE ERROR
+
+  return true;
+}
+
+bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
+{//addr="127.0.0.1"
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_port = htons(PORT);
+      
+  // Convert IPv4 and IPv6 addresses from text to binary form
+   if(inet_pton(AF_INET,addr, &serv_addr.sin_addr)<=0) 
+    {
+      printf("\nInvalid address/ Address not supported \n");
+      return false;//raise error
+    }
+
+  if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    {
+      printf("\nConnection Failed \n");
+      return false;
+    }
+  return true;
+}
+
+bool client::client_send(char buffer[])
+{
+  send(sock, buffer, strlen(buffer),0);
+  return true;
+}
+bool client::client_read(char buffer[]) //how much to read?
+{
+  std::cout<<strlen(buffer)<<std::endl;
+  int valread = read(sock, buffer, strlen(buffer));
+  std::cout<<"valread "<<valread<<std::endl;
+  if(valread!=0){
+    printf("\nStill data waiting to be read! \n");
+  }
+  return true;
+}
