@@ -66,12 +66,12 @@ bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
   return true;
 }
 
-bool client::client_send(char buffer[])
+bool client::client_send( char buffer[])
 {
   send(sock, buffer, strlen(buffer),0);
   return true;
 }
-bool client::client_read(char buffer[]) //how much to read?
+bool client::client_read( char buffer[]) //how much to read?
 {
   std::cout<<strlen(buffer)<<std::endl;
   int valread = read(sock, buffer, strlen(buffer));

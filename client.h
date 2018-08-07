@@ -12,11 +12,13 @@ class client
  public:
   client(int p,char addr[]);
   ~client();
-  //? select fd?
-  bool client_send(char buffer[]);
-  bool client_read(char buffer[]);
+  //to work with ? selector?
+  
 
  protected:
+
+  bool client_send(char buffer[]);
+  bool client_read(char buffer[]);
 
 
  private:

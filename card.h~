@@ -1,0 +1,24 @@
+#include "client.h"
+#include <stdint.h> //: uint8_t, uint16_t, uint32_t, and uint64_t
+
+class card: protected client
+{
+ public:
+  card(char addr[]);
+  ~card();
+
+  bool isReady();
+
+ protected:
+
+
+ private:
+
+  //these need to be set, function to set
+  uint16_t Trace_Num_Trig;
+  bool start_enable, rem_log_msg_enable, soft_reboot;
+  uint32_t pre_trig_samples;
+  uint32_t udpport;
+  uint32_t nbevents;
+
+};

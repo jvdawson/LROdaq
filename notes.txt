@@ -1,0 +1,23 @@
+//trying to follow Claude's labview code
+
+IP ADDRESS 172.16.4.13 //STRATIX
+.20 FINE
+IP ADDRESS 172.16.4.1 //PC control (in lab) OPEN PORT 325  --why two IP addresses? seems to use both..
+IP ADDRESS MCSH 172.16.4.3 
+
+PORT 325 
+
+CONCAT:
+U8 type value 3
+initialise array size 20, element U8 (val 0)
+[Array 21 U8 elements first is 3, rest are 0]
+flatten to string, bin endian network order (most sig byte occupies lowest address. and String does not include info about length)
+
+Write to socket
+
+UDP read (max size 548)
+Get 
+remove OP code 2 bytes?
+COMPARE with ABCD if equal  then system is ready
+
+-------------------------------------------------------------------------
