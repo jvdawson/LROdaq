@@ -55,6 +55,10 @@ bool card::isReady()
   client_read((char*)&rbuffer);
   //find ABCD
   std::cout<<" "<<rbuffer<<std::endl;
+  //0 3 0 0 ffffffab ffffffcd
+  uint32_t abcd=0;
+  memcpy(abcd,rbuffer[2],sizeof(uint32_t));
+  std::cout<<abcd<<std::endl;
   if (rbuffer[0]==0xAB && rbuffer[1]==0xCD)
     {
       std::cout<<"found!"<<std::endl;
