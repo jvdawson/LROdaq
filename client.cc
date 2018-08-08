@@ -11,6 +11,7 @@
 bool debug=true;
 #define daqcomputer "172.16.4.1"
 #define daqport 50325
+#define daqDport 65000
 
 client::~client()
 {
@@ -54,12 +55,13 @@ bool client::create_socket()
 }
 
 bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
-{//addr="127.0.0.1"
+{
   serv_addr.sin_family = AF_INET;
+  if(PORT>10000){ serv_addr.sin_port = htons(daqDport);}else{
   serv_addr.sin_port = htons(daqport);//PORT
+  }
   serv_addr.sin_addr.s_addr = inet_addr(daqcomputer);//THIS IS THIS IP..
-  //    serv_addr.sin_port = htons(PORT);
-  // serv_addr.sin_addr.s_addr = inet_addr(addr);
+ 
 
   if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {    
     std::cout<<"Connection error"<<std::endl;
