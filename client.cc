@@ -55,7 +55,7 @@ bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
 {//addr="127.0.0.1"
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_port = htons(325);//PORT
-  serv_addr.sin_addr.s_addr = inet_addr("172.16.4.1");
+  serv_addr.sin_addr.s_addr = inet_addr("172.16.4.13");
 
   if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {    
     std::cout<<"Connection error"<<std::endl;
