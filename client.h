@@ -1,16 +1,9 @@
-//#include <stdio.h>
-//#include <unistd.h>
-//#include <arpa/inet.h>
-//#include <sys/socket.h>
-//#include <stdlib.h>
-//#include <netinet/in.h>
-//#include <string.h>
 
 class client
 {
 
  public:
-  client(int p,char addr[]);
+  client(int default_p, char default_addr[], int p,char addr[]);
   ~client();
   //to work with ? selector?
   
@@ -23,11 +16,12 @@ class client
 
  private:
   int PORT;
+  int DEFAULT_PORT;
   int sock;
 
   
-  void init(char addr[]);
+  void init(char default_addr[], char addr[]);
   bool create_socket();
-  bool connect_socket(struct sockaddr_in serv_addr,char addr[]);
+  bool connect_socket(struct sockaddr_in serv_addr,char default_addr[], char addr[]);
 
 };

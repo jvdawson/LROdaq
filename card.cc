@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-card::card(char addr[],int p)
+card::card(char addr[])
 {
 
   Trace_Num_Trig=200;
@@ -12,10 +12,10 @@ card::card(char addr[],int p)
   soft_reboot=false;
   udpport = 5000;
   nbevents = 100;
-
-  controlclient = new client(p,addr);
-  datacontrol=new client(64000,addr);
-  dataclient=new client(5000,"172.16.4.1");
+  //default port, default address, port, address
+  controlclient = new client(50325, "172.16.4.1", 325,addr);
+  datacontrol=new client(65000, "172.16.4.1", 64000,addr);
+  dataclient=new client(5000,"172.16.4.1", 5000, "172.16.4.1" );
 }
 card::~card()
 {

@@ -4,7 +4,7 @@
 class card
 {
  public:
-  card(char addr[], int p);
+  card(char addr[]);
   ~card();
 
   bool SetControlRegisters(uint16_t STrace_Num_Trig,

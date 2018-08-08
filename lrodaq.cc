@@ -3,7 +3,7 @@
 int main(void)
 {
 
-  card mycard("172.16.4.13",325);//172.16.4.13
+  card mycard("172.16.4.13");//172.16.4.13
 
 
   bool res=false;

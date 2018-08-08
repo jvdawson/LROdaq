@@ -9,9 +9,9 @@
 #include <iostream>
 
 bool debug=true;
-#define daqcomputer "172.16.4.1"
-#define daqport 50325
-#define daqDport 65000
+//#define daqcomputer "172.16.4.1"
+//#define daqport 50325
+//#define daqDport 65000
 
 client::~client()
 {
@@ -22,13 +22,14 @@ client::~client()
 }
 
  
-client::client(int p, char addr[])
+client::client(int default_p, char default_addr[], int p, char addr[])
 {
+  DEFAULT_PORT = default_p;
   PORT =p;
   sock=0;
-  init(addr);
+  init(default_addr, addr);
 }
-void client::init(char addr[])
+void client::init(char default_addr[], char addr[])
 {
   struct sockaddr_in serv_addr;
   //  struct sockaddr_in address;
@@ -38,7 +39,7 @@ void client::init(char addr[])
   if(debug)std::cout<<"create socket"<<std::endl;
   res = create_socket();
   if(debug)std::cout<<"connect socket"<<std::endl;
-  res = connect_socket(serv_addr, addr);
+  res = connect_socket(serv_addr, default_addr, addr);
   if(debug)std::cout<<"init done"<<std::endl;
   
 }
@@ -54,14 +55,11 @@ bool client::create_socket()
   return true;
 }
 
-bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
+bool client::connect_socket(struct sockaddr_in serv_addr,char default_addr[], char addr[])
 {
   serv_addr.sin_family = AF_INET;
-  if(PORT==5000){ serv_addr.sin_port = htons(PORT);}
-  else if(PORT>10000){ serv_addr.sin_port = htons(daqDport);}else{
-  serv_addr.sin_port = htons(daqport);//PORT
-  }
-  serv_addr.sin_addr.s_addr = inet_addr(daqcomputer);//THIS IS THIS IP..
+  serv_addr.sin_port = htons(DEFAULT_PORT);
+  serv_addr.sin_addr.s_addr = inet_addr(default_addr);//THIS IS THIS IP..
  
 
   if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {    
