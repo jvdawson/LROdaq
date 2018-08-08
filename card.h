@@ -15,6 +15,7 @@ class card
 			   uint32_t Supdport, //not sure
 			   uint32_t Snbevents);
   bool isReady();
+  bool Data_ReadRequest();
 
  protected:
 

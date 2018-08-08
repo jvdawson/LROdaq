@@ -19,6 +19,7 @@ int main(void)
   //in progress 
   res = mycard.SetControlRegisters(200,1,0,0,100,325,100);
 
+  mycard.Data_ReadRequest();
 
   return 0;
 }

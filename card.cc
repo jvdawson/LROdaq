@@ -19,7 +19,8 @@ card::card(char addr[],int p)
 }
 card::~card()
 {
-
+  delete controlclient;
+  delete dataclient;
 
 }
 
@@ -119,3 +120,16 @@ bool card::send_control_registers()
    controlclient->client_send(stotal,4*4);
 }
 /////////////////////////////////////////////////
+bool card::Data_ReadRequest()
+{
+  //TIMEOUT? 20 U32_T
+  unsigned char sbuffer[80]={0};
+  dataclient->client_send(sbuffer,80);
+
+  unsigned char temp[1024];
+  dataclient->client_read(temp);
+  
+
+
+  return true; //?
+}
