@@ -32,9 +32,11 @@ void client::init(char addr[])
 
   memset(&serv_addr, '0', sizeof(serv_addr));
   bool res=false;
+  if(debug)std::cout<<"create socket"<<std::endl;
   res = create_socket();
+  if(debug)std::cout<<"connect socket"<<std::endl;
   res = connect_socket(serv_addr, addr);
- 
+  if(debug)std::cout<<"init done"<<std::endl;
   
 }
 bool client::create_socket()
@@ -71,7 +73,7 @@ bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
 
 bool client::client_send( char buffer[], int blen)
 {
-
+  if(debug)std::cout<<"client_send "<<std::endl;
   if(sizeof(blen>0)){
     //write out what is being sent for debugging
     if(debug)
