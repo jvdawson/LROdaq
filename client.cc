@@ -54,8 +54,8 @@ bool client::create_socket()
 bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
 {//addr="127.0.0.1"
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons(PORT);
-  serv_addr.sin_addr.s_addr = inet_addr(addr);
+  serv_addr.sin_port = htons(325);//PORT
+  serv_addr.sin_addr.s_addr = inet_addr("172.16.4.1");
 
   if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {    
     std::cout<<"Connection error"<<std::endl;
@@ -63,6 +63,9 @@ bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
     }
   if(debug){std::cout<<"Bound"<<std::endl;}
 
+  //assign new value to connect to
+    serv_addr.sin_addr.s_addr = inet_addr(addr);
+    
   // Convert IPv4 and IPv6 addresses from text to binary form
   /* if(inet_pton(AF_INET,addr, &serv_addr.sin_addr)<=0) 
     {
