@@ -5,7 +5,6 @@ int main(void)
 
     card mycard("172.16.4.13",325);//172.16.4.13
 
-    //  card mycard("172.16.4.1",50325);
 
   bool res=false;
   res = mycard.isReady(); 
@@ -18,6 +17,6 @@ int main(void)
 			       uint32_t Snbevents)
   */
   //in progress 
-  //  res = mycard.SetControlRegisters(200,1,0,0,100,325,100);
+  res = mycard.SetControlRegisters(200,1,0,0,100,325,100);
   return 0;
 }

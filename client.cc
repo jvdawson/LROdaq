@@ -68,16 +68,8 @@ bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
   if(debug){std::cout<<"Bound"<<std::endl;}
 
   //assign new value to connect to
-    serv_addr.sin_addr.s_addr = inet_addr(addr);
-   serv_addr.sin_port = htons(PORT);
-
-  // Convert IPv4 and IPv6 addresses from text to binary form
-  /* if(inet_pton(AF_INET,addr, &serv_addr.sin_addr)<=0) 
-    {
-      printf("\nInvalid address/ Address not supported \n");
-      return false;//raise error
-      }*/
-    // serv_addr.sin_addr.s_addr = inet_addr(addr);
+  serv_addr.sin_addr.s_addr = inet_addr(addr);
+  serv_addr.sin_port = htons(PORT);
 
   if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
@@ -87,7 +79,7 @@ bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
   return true;
 }
 
-bool client::client_send( char buffer[], int blen)
+bool client::client_send(unsigned char buffer[], int blen)
 {
   if(debug)std::cout<<"client_send "<<std::endl;
   if(sizeof(blen>0)){
@@ -100,26 +92,23 @@ bool client::client_send( char buffer[], int blen)
 	  }
 	std::cout<<std::endl;
       }
-  send(sock, buffer, blen,0);
 
+    send(sock, buffer,blen,0);
   return true;
     }
     return false;
 }
-bool client::client_read( char buffer[]) //how much to read?
+bool client::client_read(unsigned char buffer[]) //how much to read?
 {
   std::cout<<sizeof(buffer)<<std::endl;
   int valread = read(sock, buffer, sizeof(buffer));
   if(debug){
     std::cout<<"valread "<<valread<<std::endl;
     for(int i=0;i<valread;i++)
-      {
+      { //this is passed as a char, but will be decoded as unsigned char 
 	std::cout<<std::hex<<unsigned(buffer[i])<<" ";
       }
     std::cout<<std::endl;
   }
-  //  if(valread!=0){
-  //   printf("\nStill data waiting to be read! \n");
-  // }
   return true;
 }

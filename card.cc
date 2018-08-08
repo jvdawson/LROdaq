@@ -48,18 +48,18 @@ bool card::isReady()
   unsigned char sbuffer[82]={0}; 
   sbuffer[1]=0x3;
 
-  client_send((char*)&sbuffer, 82);
+  client_send(sbuffer, 82);
 
 
   unsigned char rbuffer[1024]; //need to be longer than value read
-  client_read((char*)&rbuffer);
+  client_read(rbuffer);
+  for(int i=0;i<6;i++)
+    {
+      std::cout<<std::hex<<unsigned(rbuffer[i])<<" ";
+    }
+  std::cout<<std::endl;
   //find ABCD
-  std::cout<<" "<<rbuffer<<std::endl;
-  //0 3 0 0 ffffffab ffffffcd
-  uint32_t abcd=0;
-  memcpy(abcd,rbuffer[2],sizeof(uint32_t));
-  std::cout<<abcd<<std::endl;
-  if (rbuffer[0]==0xAB && rbuffer[1]==0xCD)
+  if (rbuffer[4]==0xAB && rbuffer[5]==0xCD)
     {
       std::cout<<"found!"<<std::endl;
       return true;
@@ -93,21 +93,8 @@ bool card::send_control_registers()
 
   buffer[3] = swap(pre_trig_samples);
   buffer[2] = swap(nbevents);
-  //nb events (100) ->  [00000064]
-
-  //result C81 --OK
-
-  //TRACE NUM 200 + bits for start enable, rem_log_msg_en, softreboot
-  //start_enable 
-  //rem_log_msg_enable -- shift 1
-  //soft_reboot -- shift 2
-  //OR
   buffer[1] = swap(start_enable | (rem_log_msg_enable<<1) | (soft_reboot<<2) | Trace_Num_Trig<<4); //0000 0C81
-  
-  //destination udp port? 5000? or 325?
-  buffer[0] = swap(udpport); 
-  //  for(int i=0;i<4;i++)std::cout<<std::hex<<unsigned(buffer[i])<<" ";
-  //std::cout<<std::endl; OK
+  buffer[0] = swap(udpport); //??
 
   unsigned char sbuffer[16];
   memcpy(sbuffer,&buffer,16);
@@ -116,12 +103,17 @@ bool card::send_control_registers()
   for(int i=0;i<4*4;i++)std::cout<<std::hex<<unsigned(sbuffer[i])<<" ";
   std::cout<<std::endl;//OK
 
-  // unsigned char stotal[4*4 + 2];
-  // strcat(stotal,sbuffer);
-  // strcat(stotal,sheader);
-
+   unsigned char stotal[4*4 + 2];
+   for(int i=0;i<2;i++)
+     {
+       stotal[i]=sheader[i];
+     }
+   for(int i=0;i<4*4;i++)
+     {
+       stotal[i+2]=sbuffer[i];
+     }
   //concat these together, convert to string..
-  client_send((char*)sbuffer,4*4);
+  client_send(stotal,4*4);
 
 
 
