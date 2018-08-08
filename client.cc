@@ -66,7 +66,7 @@ bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
   if(debug){std::cout<<"Bound"<<std::endl;}
 
   //assign new value to connect to
-  serv_addr.sin_addr.s_addr = inet_addr(addr);
+  serv_addr.sin_addr.s_addr = inet_addr("172.16.4.13");
   serv_addr.sin_port = htons(325);
 
   // Convert IPv4 and IPv6 addresses from text to binary form
