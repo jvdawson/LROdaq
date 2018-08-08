@@ -4,7 +4,7 @@
 class card: protected client
 {
  public:
-  card(char addr[]);
+  card(char addr[], int p);
   ~card();
 
   bool SetControlRegisters(uint16_t STrace_Num_Trig,

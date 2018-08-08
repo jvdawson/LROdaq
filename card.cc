@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-card::card(char addr[]):client(8080,addr)
+card::card(char addr[],int p):client(p,addr)
 {
   //325
   Trace_Num_Trig=200;
