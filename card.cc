@@ -15,7 +15,7 @@ card::card(char addr[],int p)
 
   controlclient = new client(p,addr);
   datacontrol=new client(64000,addr);
-  dataclient=new client(64000,"172.16.4.1");
+  dataclient=new client(5000,"172.16.4.1");
 }
 card::~card()
 {
