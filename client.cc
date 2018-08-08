@@ -7,6 +7,9 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <iostream>
+
+bool debug=true;
+
 client::~client()
 {
   PORT=0;
@@ -66,15 +69,29 @@ bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
   return true;
 }
 
-bool client::client_send( char buffer[])
+bool client::client_send( char buffer[], int blen)
 {
-  send(sock, buffer, strlen(buffer),0);
+
+  if(sizeof(blen>0)){
+    //write out what is being sent for debugging
+    if(debug)
+      {std::cout<<"Sending:";
+	for(int i=0;i<blen;i++)
+	  {
+	    std::cout<<std::hex<<unsigned(buffer[i])<<" ";
+	  }
+	std::cout<<std::endl;
+      }
+  send(sock, buffer, blen,0);
+
   return true;
+    }
+    return false;
 }
 bool client::client_read( char buffer[]) //how much to read?
 {
-  std::cout<<strlen(buffer)<<std::endl;
-  int valread = read(sock, buffer, strlen(buffer));
+  std::cout<<sizeof(buffer)<<std::endl;
+  int valread = read(sock, buffer, sizeof(buffer));
   std::cout<<"valread "<<valread<<std::endl;
   if(valread!=0){
     printf("\nStill data waiting to be read! \n");

@@ -17,7 +17,7 @@ class client
 
  protected:
 
-  bool client_send(char buffer[]);
+  bool client_send(char buffer[], int blen);
   bool client_read(char buffer[]);
 
 
