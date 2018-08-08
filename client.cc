@@ -57,7 +57,8 @@ bool client::create_socket()
 bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
 {
   serv_addr.sin_family = AF_INET;
-  if(PORT>10000){ serv_addr.sin_port = htons(daqDport);}else{
+  if(PORT==64000){ serv_addr.sin_port = htons(PORT);}
+  else if(PORT>10000){ serv_addr.sin_port = htons(daqDport);}else{
   serv_addr.sin_port = htons(daqport);//PORT
   }
   serv_addr.sin_addr.s_addr = inet_addr(daqcomputer);//THIS IS THIS IP..
