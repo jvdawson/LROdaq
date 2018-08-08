@@ -2,7 +2,7 @@
 //testing version for real...
 int main(void)
 {
-  card mycard("172.16.4.13",325);
+  card mycard("172.16.4.13",325);//172.16.4.13
   bool res=false;
   res = mycard.isReady(); 
   /* bool card::SetControlRegisters(uint16_t STrace_Num_Trig,
