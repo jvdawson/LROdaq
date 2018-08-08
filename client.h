@@ -15,15 +15,16 @@ class client
   //to work with ? selector?
   
 
- protected:
-
   bool client_send(unsigned char buffer[], int blen);
   bool client_read(unsigned char buffer[]);
+
+ protected:
 
 
  private:
   int PORT;
   int sock;
+
   
   void init(char addr[]);
   bool create_socket();

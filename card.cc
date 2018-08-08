@@ -3,15 +3,18 @@
 #include <iostream>
 
 
-card::card(char addr[],int p):client(p,addr)
+card::card(char addr[],int p)
 {
-  //325
+
   Trace_Num_Trig=200;
   start_enable =true;
   rem_log_msg_enable=false;
   soft_reboot=false;
-  udpport = 325;
+  udpport = 5000;
   nbevents = 100;
+
+  controlclient = new client(p,addr);
+  dataclient=new client(64000,addr);
 
 }
 card::~card()
@@ -48,11 +51,11 @@ bool card::isReady()
   unsigned char sbuffer[82]={0}; 
   sbuffer[1]=0x3;
 
-  client_send(sbuffer, 82);
+  controlclient->client_send(sbuffer, 82);
 
 
   unsigned char rbuffer[1024]; //need to be longer than value read
-  client_read(rbuffer);
+  controlclient->client_read(rbuffer);
   for(int i=0;i<6;i++)
     {
       std::cout<<std::hex<<unsigned(rbuffer[i])<<" ";
@@ -113,8 +116,6 @@ bool card::send_control_registers()
        stotal[i+2]=sbuffer[i];
      }
   //concat these together, convert to string..
-  client_send(stotal,4*4);
-
-
-
+   controlclient->client_send(stotal,4*4);
 }
+/////////////////////////////////////////////////

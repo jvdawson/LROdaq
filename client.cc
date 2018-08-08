@@ -42,7 +42,7 @@ void client::init(char addr[])
   
 }
 bool client::create_socket()
-{//SOCK_STREAM
+{
   if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
       printf("\n Socket creation error \n");

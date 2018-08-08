@@ -1,7 +1,7 @@
 #include "client.h"
 #include <stdint.h> //: uint8_t, uint16_t, uint32_t, and uint64_t
 
-class card: protected client
+class card
 {
  public:
   card(char addr[], int p);
@@ -29,5 +29,9 @@ class card: protected client
   uint32_t pre_trig_samples;
   uint32_t udpport;
   uint32_t nbevents;
+
+  //
+  client *controlclient;
+  client *dataclient;
 
 };
