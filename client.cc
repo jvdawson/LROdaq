@@ -22,14 +22,14 @@ client::~client()
 }
 
  
-client::client(int default_p, char default_addr[], int p, char addr[])
+client::client(int default_p, char *default_addr, int p, char *addr)
 {
   DEFAULT_PORT = default_p;
   PORT =p;
   sock=0;
   init(default_addr, addr);
 }
-void client::init(char default_addr[], char addr[])
+void client::init(char *default_addr, char *addr)
 {
   struct sockaddr_in serv_addr;
   //  struct sockaddr_in address;
@@ -55,7 +55,7 @@ bool client::create_socket()
   return true;
 }
 
-bool client::connect_socket(struct sockaddr_in serv_addr,char default_addr[], char addr[])
+bool client::connect_socket(struct sockaddr_in serv_addr,char *default_addr, char *addr)
 {
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_port = htons(DEFAULT_PORT);

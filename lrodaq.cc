@@ -3,7 +3,7 @@
 int main(void)
 {
 
-  card mycard("172.16.4.13");//172.16.4.13
+  card mycard((char*)"172.16.4.13");//172.16.4.13
 
 
   bool res=false;
@@ -17,7 +17,10 @@ int main(void)
 			       uint32_t Snbevents)
   */
   //in progress 
-  res = mycard.SetControlRegisters(200,1,0,0,100,325,100);
+  res = mycard.SetControlRegisters(200,0,0,0,100,5000,100);
+
+  res = mycard.SetControlRegisters(200,1,0,0,100,5000,100);
+
 
   mycard.Data_ReadRequest();
 
