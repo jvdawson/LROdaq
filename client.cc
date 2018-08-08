@@ -54,13 +54,10 @@ bool client::create_socket()
 bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
 {//addr="127.0.0.1"
   serv_addr.sin_family = AF_INET;
-<<<<<<< HEAD
   serv_addr.sin_port = htons(50325);//PORT
   serv_addr.sin_addr.s_addr = inet_addr("172.16.4.1");
-=======
-  serv_addr.sin_port = htons(PORT);
-  serv_addr.sin_addr.s_addr = inet_addr(addr);
->>>>>>> 741d6ec9b25a55a6860e513b8e3d916488e85b06
+  //  serv_addr.sin_port = htons(PORT);
+  // serv_addr.sin_addr.s_addr = inet_addr(addr);
 
   if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {    
     std::cout<<"Connection error"<<std::endl;
@@ -69,12 +66,9 @@ bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
   if(debug){std::cout<<"Bound"<<std::endl;}
 
   //assign new value to connect to
-  //    serv_addr.sin_addr.s_addr = inet_addr(addr);
-<<<<<<< HEAD
-  //  serv_addr.sin_port = htons(325);
-=======
-    
->>>>>>> 741d6ec9b25a55a6860e513b8e3d916488e85b06
+  serv_addr.sin_addr.s_addr = inet_addr(addr);
+  serv_addr.sin_port = htons(325);
+
   // Convert IPv4 and IPv6 addresses from text to binary form
   /* if(inet_pton(AF_INET,addr, &serv_addr.sin_addr)<=0) 
     {
