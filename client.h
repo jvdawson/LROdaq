@@ -24,7 +24,7 @@ class client
  private:
   int PORT;
   int sock;
-
+  
   void init(char addr[]);
   bool create_socket();
   bool connect_socket(struct sockaddr_in serv_addr,char addr[]);

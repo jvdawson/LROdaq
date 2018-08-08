@@ -9,6 +9,8 @@
 #include <iostream>
 
 bool debug=true;
+#define daqcomputer "172.16.4.1"
+#define daqport 50325
 
 client::~client()
 {
@@ -40,8 +42,8 @@ void client::init(char addr[])
   
 }
 bool client::create_socket()
-{
-  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+{//SOCK_STREAM
+  if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
       printf("\n Socket creation error \n");
       return false;
@@ -54,9 +56,9 @@ bool client::create_socket()
 bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
 {//addr="127.0.0.1"
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons(50325);//PORT
-  serv_addr.sin_addr.s_addr = inet_addr("172.16.4.1");
-  //  serv_addr.sin_port = htons(PORT);
+  serv_addr.sin_port = htons(daqport);//PORT
+  serv_addr.sin_addr.s_addr = inet_addr(daqcomputer);//THIS IS THIS IP..
+  //    serv_addr.sin_port = htons(PORT);
   // serv_addr.sin_addr.s_addr = inet_addr(addr);
 
   if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {    
@@ -66,8 +68,8 @@ bool client::connect_socket(struct sockaddr_in serv_addr,char addr[])
   if(debug){std::cout<<"Bound"<<std::endl;}
 
   //assign new value to connect to
-  serv_addr.sin_addr.s_addr = inet_addr("172.16.4.13");
-  serv_addr.sin_port = htons(325);
+    serv_addr.sin_addr.s_addr = inet_addr(addr);
+   serv_addr.sin_port = htons(PORT);
 
   // Convert IPv4 and IPv6 addresses from text to binary form
   /* if(inet_pton(AF_INET,addr, &serv_addr.sin_addr)<=0) 
@@ -108,9 +110,16 @@ bool client::client_read( char buffer[]) //how much to read?
 {
   std::cout<<sizeof(buffer)<<std::endl;
   int valread = read(sock, buffer, sizeof(buffer));
-  std::cout<<"valread "<<valread<<std::endl;
-  if(valread!=0){
-    printf("\nStill data waiting to be read! \n");
+  if(debug){
+    std::cout<<"valread "<<valread<<std::endl;
+    for(int i=0;i<valread;i++)
+      {
+	std::cout<<std::hex<<unsigned(buffer[i])<<" ";
+      }
+    std::cout<<std::endl;
   }
+  //  if(valread!=0){
+  //   printf("\nStill data waiting to be read! \n");
+  // }
   return true;
 }
