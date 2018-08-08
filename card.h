@@ -34,5 +34,6 @@ class card
   //
   client *controlclient;
   client *dataclient;
+  client *datacontrol;
 
 };

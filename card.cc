@@ -14,14 +14,14 @@ card::card(char addr[],int p)
   nbevents = 100;
 
   controlclient = new client(p,addr);
-  dataclient=new client(64000,addr);
-
+  datacontrol=new client(64000,addr);
+  dataclient=new client(64000,"172.16.4.1");
 }
 card::~card()
 {
   delete controlclient;
   delete dataclient;
-
+  delete datacontrol;
 }
 
 //SETS all control registers and writes them
@@ -124,7 +124,7 @@ bool card::Data_ReadRequest()
 {
   //TIMEOUT? 20 U32_T
   unsigned char sbuffer[80]={0};
-  dataclient->client_send(sbuffer,80);
+  datacontrol->client_send(sbuffer,80);
 
   unsigned char temp[1024];
   dataclient->client_read(temp);
