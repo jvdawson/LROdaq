@@ -72,9 +72,9 @@ bool client::csend(unsigned char buffer[], int blen, char *addr, int p)
     //write out what is being sent for debugging
     if(debug)
       {std::cout<<"Sending:";
-	for(int i=0;i<blen;i++)
+	for(int i=0;i<blen;i=i+2)
 	  {
-	    std::cout<<std::hex<<unsigned(buffer[i])<<" ";
+	    std::cout<<std::hex<<unsigned(buffer[i])<<unsigned(buffer[i+1])<<" ";
 	  }
 	std::cout<<std::endl;
       }

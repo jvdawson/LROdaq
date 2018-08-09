@@ -14,7 +14,6 @@ class card
 			   bool Srem_log_msg_enable, 
 			   bool Ssoft_reboot,
 			   uint32_t Spre_trig_samples,
-			   uint32_t Supdport, //not sure
 			   uint32_t Snbevents);
   bool isReady();
   bool Data_ReadRequest();

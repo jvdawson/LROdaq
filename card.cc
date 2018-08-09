@@ -12,11 +12,12 @@ card::card(char *addr)
   soft_reboot=false;
   udpport = 65000;//??
   nbevents = 100;
+
   comm = new client(50325,  (char*)"172.16.4.1");
   card_address=new char[sizeof(addr)];
   strcpy(card_address, addr);//?
 
-  dcomm = new client(65000, (char*)"172.16.4.1");
+  dcomm = new client(udpport, (char*)"172.16.4.1");
   //  dataserv=new server(65000);               
 
 
@@ -36,7 +37,7 @@ bool card::SetControlRegisters(uint16_t STrace_Num_Trig,
 			       bool Srem_log_msg_enable, 
 			       bool Ssoft_reboot,
 			       uint32_t Spre_trig_samples,
-			       uint32_t Supdport, //not sure
+			       //			       uint32_t Supdport, //not sure
 			       uint32_t Snbevents)
 {
   Trace_Num_Trig=STrace_Num_Trig;
@@ -45,7 +46,7 @@ bool card::SetControlRegisters(uint16_t STrace_Num_Trig,
 		
   soft_reboot = Ssoft_reboot;
   pre_trig_samples = Spre_trig_samples;
-  udpport = Supdport; //not sure
+  //FIXED!  udpport = Supdport; //not sure
   nbevents= Snbevents;
 
   send_control_registers();
@@ -62,7 +63,7 @@ bool card::isReady()
 
 
   unsigned char rbuffer[1024]; //need to be longer than value read
-  res = comm->cread(rbuffer,card_address, 325);
+  res = comm->cread(rbuffer,NULL,0);//card_address, 325);
   for(int i=0;i<6;i++)
     {
       std::cout<<std::hex<<unsigned(rbuffer[i])<<" ";
@@ -123,7 +124,7 @@ bool card::send_control_registers()
        stotal[i+2]=sbuffer[i];
      }
   //concat these together, convert to string..
-   bool res = comm->csend(stotal,4*4, card_address, 325);
+   bool res = comm->csend(stotal,4*4+2, card_address, 325);
 }
 /////////////////////////////////////////////////
 bool card::Data_ReadRequest()
@@ -133,8 +134,9 @@ bool card::Data_ReadRequest()
   unsigned char sbuffer[80]={0};
   bool res = comm->csend(sbuffer,80,card_address,64000);
 
-  unsigned char obuffer[1024]={0};
+  unsigned char obuffer[1472]={0};
   res = dcomm->cread(obuffer,NULL,0);//n'import?
+  std::cout<<"read "<<res<<std::endl;
   //  unsigned char temp[1024];
   // res = dataserv->read(temp);
   //dataclient?? port ipaddress??
