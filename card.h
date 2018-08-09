@@ -1,4 +1,6 @@
+#include "server.h"
 #include "client.h"
+
 #include <stdint.h> //: uint8_t, uint16_t, uint32_t, and uint64_t
 
 class card
@@ -32,8 +34,7 @@ class card
   uint32_t nbevents;
 
   //
-  client *controlclient;
-  client *dataclient;
-  client *datacontrol;
-
+  client *dcomm;
+  client *comm;
+  char *card_address;
 };

@@ -17,7 +17,7 @@ int main(void)
 			       uint32_t Snbevents)
   */
   //in progress 
-  res = mycard.SetControlRegisters(200,0,0,0,100,5000,100);
+  res = mycard.SetControlRegisters(200,0,0,0,100,65000,100);
 
   res = mycard.SetControlRegisters(200,1,0,0,100,5000,100);
 

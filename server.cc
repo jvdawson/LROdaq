@@ -10,7 +10,7 @@
 //how to connect to read data...
 //this is TCP/IP or UDP?
 
-bool debug=true;
+bool servdebug=true;
 //JUST TO TEST...
 server::~server()
 {
@@ -44,7 +44,8 @@ void server::init()
     serveraddr.sin_addr.s_addr = htonl( INADDR_ANY );
 
     if ( bind(sock, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 ) {
-        perror( "bind failed" );
+      std::cout<<"on PORT "<<PORT<<std::endl;
+      perror( "bind failed" );
 
     }
     //return something?
@@ -106,12 +107,12 @@ bool server::connect_socket(struct sockaddr_in serv_addr)
 }
 */
 
-bool server::server_send(unsigned char buffer[], int blen)
+bool server::send(unsigned char buffer[], int blen)
 {
-  if(debug)std::cout<<"server_send "<<std::endl;
+  if(servdebug)std::cout<<"server_send "<<std::endl;
   if(sizeof(blen>0)){
     //write out what is being sent for debugging
-    if(debug)
+    if(servdebug)
       {std::cout<<"Sending:";
 	for(int i=0;i<blen;i++)
 	  {
@@ -128,13 +129,13 @@ bool server::server_send(unsigned char buffer[], int blen)
   }
   return false;
 }
-bool server::server_read(unsigned char buffer[]) //how much to read?
+bool server::read(unsigned char buffer[]) //how much to read?
 { //need to return the number of bytes read... (more useful)
   std::cout<<sizeof(buffer)<<std::endl;
   // int valread = read(sock, buffer, sizeof(buffer),0,NULL,0);
   int length = recvfrom( sock, buffer, sizeof(buffer) - 1, 0, NULL, 0 );
        
-  if(debug){
+  if(servdebug){
     std::cout<<"length:  "<<length<<std::endl;
     for(int i=0;i<length;i++)
       { //this is passed as a char, but will be decoded as unsigned char 

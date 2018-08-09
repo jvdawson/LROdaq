@@ -8,6 +8,9 @@
 #include <string.h>
 #include <iostream>
 
+
+//NEED TO ADD ERROR HANDLING...
+
 bool debug=true;
 //#define daqcomputer "172.16.4.1"
 //#define daqport 50325
@@ -15,36 +18,25 @@ bool debug=true;
 
 client::~client()
 {
-  PORT=0;
+
   sock=0;
 
 
 }
 
- 
-client::client(int default_p, char *default_addr, int p, char *addr)
+
+
+client::client(int my_p, char *my_addr)
 {
-  DEFAULT_PORT = default_p;
-  PORT =p;
   sock=0;
-  init(default_addr, addr);
+  init(my_p,my_addr);
 }
-void client::init(char *default_addr, char *addr)
+bool client::init(int PORT, char *addr)
 {
+
   struct sockaddr_in serv_addr;
-  //  struct sockaddr_in address;
-
   memset(&serv_addr, '0', sizeof(serv_addr));
-  bool res=false;
-  if(debug)std::cout<<"create socket"<<std::endl;
-  res = create_socket();
-  if(debug)std::cout<<"connect socket"<<std::endl;
-  res = connect_socket(serv_addr, default_addr, addr);
-  if(debug)std::cout<<"init done"<<std::endl;
-  
-}
-bool client::create_socket()
-{
+
   if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
       printf("\n Socket creation error \n");
@@ -52,14 +44,10 @@ bool client::create_socket()
     }
   //RAISE ERROR
 
-  return true;
-}
-
-bool client::connect_socket(struct sockaddr_in serv_addr,char *default_addr, char *addr)
-{
+  // PORT is port on my machine to send/receive data
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons(DEFAULT_PORT);
-  serv_addr.sin_addr.s_addr = inet_addr(default_addr);//THIS IS THIS IP..
+  serv_addr.sin_port = htons(PORT);
+  serv_addr.sin_addr.s_addr = inet_addr(addr);//THIS IS MY IP..
  
 
   if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {    
@@ -68,20 +56,17 @@ bool client::connect_socket(struct sockaddr_in serv_addr,char *default_addr, cha
     }
   if(debug){std::cout<<"Bound"<<std::endl;}
 
-  //assign new value to connect to
-  serv_addr.sin_addr.s_addr = inet_addr(addr);
-  serv_addr.sin_port = htons(PORT);
 
-  if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
-      printf("\nConnection Failed \n");
-      return false;
-    }
-  return true;
 }
 
-bool client::client_send(unsigned char buffer[], int blen)
+bool client::csend(unsigned char buffer[], int blen, char *addr, int p)
 {
+  struct sockaddr_in dest_addr;
+  dest_addr.sin_family = AF_INET;                                           
+  dest_addr.sin_port = htons(p);                                            
+  dest_addr.sin_addr.s_addr = inet_addr(addr);//THIS IS THIS IP..               
+  
+  
   if(debug)std::cout<<"client_send "<<std::endl;
   if(sizeof(blen>0)){
     //write out what is being sent for debugging
@@ -94,18 +79,29 @@ bool client::client_send(unsigned char buffer[], int blen)
 	std::cout<<std::endl;
       }
 
-    send(sock, buffer,blen,0);
+    ssize_t thissize = sendto(sock,buffer,blen, 0,(struct sockaddr *) &dest_addr, sizeof(dest_addr));
+    // ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
+    //                  const struct sockaddr *dest_addr, socklen_t addrlen);
+    //    send(sock, buffer,blen,0);
   return true;
     }
     return false;
 }
-bool client::client_read(unsigned char buffer[]) //how much to read?
-{
+bool client::cread(unsigned char buffer[], char *addr, int p) 
+{//do I need char *addr, int p??
+  /*   struct sockaddr_in dest_addr;
+  dest_addr.sin_family = AF_INET;
+  dest_addr.sin_port = htons(p);
+  dest_addr.sin_addr.s_addr = inet_addr(addr);//THIS IS THIS IP..              
+  */ 
+  int length = recvfrom( sock, buffer, sizeof(buffer) - 1, 0, NULL, 0 );
+
+  
   std::cout<<sizeof(buffer)<<std::endl;
-  int valread = read(sock, buffer, sizeof(buffer));
+
   if(debug){
-    std::cout<<"valread "<<valread<<std::endl;
-    for(int i=0;i<valread;i++)
+    std::cout<<"length "<<length<<std::endl;
+    for(int i=0;i<length;i++)
       { //this is passed as a char, but will be decoded as unsigned char 
 	std::cout<<std::hex<<unsigned(buffer[i])<<" ";
       }

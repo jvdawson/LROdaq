@@ -3,25 +3,24 @@ class client
 {
 
  public:
-  client(int default_p, char *default_addr, int p,char *addr);
+  client(int my_p, char *my_addr);//127.0.0.1??
   ~client();
   //to work with ? selector?
   
 
-  bool client_send(unsigned char buffer[], int blen);
-  bool client_read(unsigned char buffer[]);
+  bool csend(unsigned char buffer[], int blen, char *addr, int p);
+  bool cread(unsigned char buffer[], char *addr, int p);
 
  protected:
 
 
  private:
-  int PORT;
-  int DEFAULT_PORT;
+
   int sock;
 
   
-  void init(char *default_addr, char *addr);
-  bool create_socket();
-  bool connect_socket(struct sockaddr_in serv_addr, char *default_addr, char *addr);
+  bool init(int p, char *addr);
 
+
+    
 };

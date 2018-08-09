@@ -10,18 +10,24 @@ card::card(char *addr)
   start_enable =false;
   rem_log_msg_enable=false;
   soft_reboot=false;
-  udpport = 5000;//??
+  udpport = 65000;//??
   nbevents = 100;
-  //default port, default address, port, address
-  controlclient = new client(50325, (char*)"172.16.4.1", 325,addr);
-  datacontrol=new client(65000, (char*)"172.16.4.1", 64000,addr);
-  dataclient=new client(5000,(char*)"172.16.4.1", 5000, addr );
+  comm = new client(50325,  (char*)"172.16.4.1");
+  card_address=new char[sizeof(addr)];
+  strcpy(card_address, addr);//?
+
+  dcomm = new client(65000, (char*)"172.16.4.1");
+  //  dataserv=new server(65000);               
+
+
 }
 card::~card()
 {
-  delete controlclient;
-  delete dataclient;
-  delete datacontrol;
+  delete comm;
+  delete dcomm;
+  //  delete controlclient;
+  // delete dataclient;
+  // delete dataserv;
 }
 
 //SETS all control registers and writes them
@@ -51,12 +57,12 @@ bool card::isReady()
   //3 is U16 ->type cast to U8
   unsigned char sbuffer[82]={0}; 
   sbuffer[1]=0x3;
-
-  controlclient->client_send(sbuffer, 82);
+  bool res=false;
+  res = comm->csend(sbuffer, 82, card_address, 325);
 
 
   unsigned char rbuffer[1024]; //need to be longer than value read
-  controlclient->client_read(rbuffer);
+  res = comm->cread(rbuffer,card_address, 325);
   for(int i=0;i<6;i++)
     {
       std::cout<<std::hex<<unsigned(rbuffer[i])<<" ";
@@ -117,17 +123,20 @@ bool card::send_control_registers()
        stotal[i+2]=sbuffer[i];
      }
   //concat these together, convert to string..
-   controlclient->client_send(stotal,4*4);
+   bool res = comm->csend(stotal,4*4, card_address, 325);
 }
 /////////////////////////////////////////////////
 bool card::Data_ReadRequest()
 {
   //TIMEOUT? 20 U32_T
+  //which port to use?
   unsigned char sbuffer[80]={0};
-  datacontrol->client_send(sbuffer,80);
+  bool res = comm->csend(sbuffer,80,card_address,64000);
 
-  unsigned char temp[1024];
-  dataclient->client_read(temp);
+  unsigned char obuffer[1024]={0};
+  res = dcomm->cread(obuffer,NULL,0);//n'import?
+  //  unsigned char temp[1024];
+  // res = dataserv->read(temp);
   //dataclient?? port ipaddress??
 
 

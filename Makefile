@@ -30,5 +30,5 @@ test_card: test_card.o card.o client.o
 	 g++ -o $@  $^
 lrodaq.o: lrodaq.cc
 	(g++ -c $< -o $@ )
-lrodaq: lrodaq.o card.o client.o
+lrodaq: lrodaq.o card.o client.o server.o
 	 g++ -o $@  $^

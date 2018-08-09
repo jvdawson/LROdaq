@@ -8,8 +8,8 @@ class server
   //to work with ? selector?
   
 
-  bool server_send(unsigned char buffer[], int blen);
-  bool server_read(unsigned char buffer[]);
+  bool send(unsigned char buffer[], int blen);
+  bool read(unsigned char buffer[]);
 
  protected:
 
