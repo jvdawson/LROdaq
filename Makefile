@@ -6,12 +6,23 @@ clean:
 client.o: client.cc
 	(g++ -c $< -o $@ )
 
+server.o: server.cc
+	(g++ -c $< -o $@ )
+
 test_client.o: test_client.cc
 	(g++ -c $< -o $@ )
+
 test_client: test_client.o client.o
 	 g++ -o $@  $^
 card.o: card.cc
 	(g++ -c $< -o $@ )
+
+test_server.o: test_server.cc
+	(g++ -c $< -o $@ )
+
+test_server: test_server.o server.o
+	 g++ -o $@ $^
+
 
 test_card.o: test_card.cc
 	(g++ -c $< -o $@ )
