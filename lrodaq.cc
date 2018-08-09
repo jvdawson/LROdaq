@@ -7,6 +7,8 @@ int main(void)
   card mycard((char*)"172.16.4.13");//172.16.4.13
   bool res=false;
 
+
+
  
   res = mycard.isReady();
   
@@ -24,6 +26,9 @@ int main(void)
 
 
   mycard.Data_ReadRequest();
+
+  res = mycard.SetControlRegisters(0,0,0,0,0,00);
+
 
   return 0;
 }
