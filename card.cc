@@ -1,8 +1,7 @@
 #include "card.h"
 #include <string.h>
 #include <iostream>
-
-
+#define daq_ip "172.16.4.1"
 card::card(char *addr)
 {
 
@@ -12,12 +11,12 @@ card::card(char *addr)
   soft_reboot=false;
   udpport = 65000;//??
   nbevents = 100;
-
-  comm = new client(50325,  (char*)"172.16.4.1");
+  //172.16.4.1 daq
+  comm = new client(50325,  (char*)daq_ip);
   card_address=new char[sizeof(addr)];
   strcpy(card_address, addr);//?
 
-  dcomm = new client(udpport, (char*)"172.16.4.1");
+  dcomm = new client(udpport, (char*)daq_ip);
   //  dataserv=new server(65000);               
 
 

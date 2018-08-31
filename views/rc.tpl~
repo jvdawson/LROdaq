@@ -1,0 +1,29 @@
+<html>
+<head>
+<title>title</title>
+</head>
+
+<body>
+
+<p>
+  <form action="/rc" method="post" enctype="multipart/form-data">
+   <button type = "submit" 
+   % if state == 'running':
+			disabled	
+   % end
+    name="start" value="true">
+    Start
+  </button>
+
+  <button type = "submit"
+   % if state == 'ready':
+			 disabled
+   % end
+    name="stop" value="true">
+     Stop
+  </button>
+
+  </form>
+</p>
+
+</body>

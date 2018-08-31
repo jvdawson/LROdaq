@@ -1,0 +1,15 @@
+<html>
+<head>
+<title>{{title}}</title>
+</head>
+
+<body>
+
+<p> Card 1 {ip[0]}  </p>
+<p> Card 2 {ip[1]}  </p>
+<p> Card 3 {ip[2]}  </p>
+
+</body>
+
+
+</html>
