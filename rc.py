@@ -48,14 +48,15 @@ while True:
         time.sleep(10) #delay 10 seconds
     #need to check if server is running, might need to call this again though
 #####################################################
+ 
 
-
-
+ips = { 'ip': ['172.16.4.13','172.16.4.14','172.16.4.15']}
+ 
 ############################################################
 @route('/rc')
 def rc():
     
-    return template('rc.tpl', get_status() )
+    return template('rc.tpl', get_status() ,ips )
 @route('/rc', method='POST')
 def do_rc():
   #  check = [ request.forms.get('start') , request.forms.get('stop')];
@@ -71,7 +72,7 @@ def do_rc():
 
 #do something with the status
 
-    return template('rc.tpl',status) #WORKING!!!
+    return template('rc.tpl',status , ips) #WORKING!!!
 #main
 # NEED TO WORK ON FLOW -- going backwards and forwards..
 run(host='localhost', port=8080)

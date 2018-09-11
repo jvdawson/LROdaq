@@ -17,6 +17,7 @@ int main(int argc, char const *argv[])
 {
   char *ready_message="ready";
   char *running_message="running";
+  char *abort_message="abort";
   char *error_message="error";
 
   int server_fd, new_socket, valread;

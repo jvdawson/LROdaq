@@ -9,15 +9,16 @@ class client
   
 
   bool csend(unsigned char buffer[], int blen, char *addr, int p);
-  bool cread(unsigned char buffer[], char *addr, int p);
+  bool cread(unsigned char buffer[]);
 
  protected:
 
 
- private:
+
 
   int sock;
-
+  
+ private:
   
   bool init(int p, char *addr);
 

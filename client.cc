@@ -87,7 +87,7 @@ bool client::csend(unsigned char buffer[], int blen, char *addr, int p)
     }
     return false;
 }
-bool client::cread(unsigned char buffer[], char *addr, int p) 
+bool client::cread(unsigned char buffer[]) 
 {//do I need char *addr, int p??
   /*   struct sockaddr_in dest_addr;
   dest_addr.sin_family = AF_INET;

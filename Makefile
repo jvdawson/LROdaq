@@ -17,6 +17,9 @@ test_client: test_client.o client.o
 card.o: card.cc
 	(g++ -c $< -o $@ )
 
+datareceiver.o: datareceiver.cc
+	(g++ -c -pthread -std=c++11 $< -o $@ )
+
 test_server.o: test_server.cc
 	(g++ -c $< -o $@ )
 

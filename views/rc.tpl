@@ -5,6 +5,28 @@
 
 <body>
 
+<p>
+ <form action="/init" method="post">
+
+
+% for num, addrip in enumerate(ip, start=0):
+  <input type ="text" 
+  % if state != 'abort':
+	 disabled
+  % end
+  name={{'ip%s' % (num)}} value={{addrip}}> <input type="checkbox" 
+  % if state != 'abort':
+         disabled
+  % end
+  name={{'check%s' % (num)}} /> 
+% end
+<input value="Go!" 
+  % if state != 'abort':
+         disabled
+  % end
+  type="submit" />
+</form>
+</p>
 
   <form action="/rc" method="post" enctype="multipart/form-data">
 <p>
