@@ -10,7 +10,7 @@ class messagelistener: public client
  messagelistener(char *my_addr);
   ~messagelistener();
 
-  int get_socket(); //TO USE WITH GLOBAL SELECTOR
+  int get_socket(){return sock;}
 
   void read();
   //redirect service? syslogger? html?

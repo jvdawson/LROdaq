@@ -11,6 +11,8 @@
 #include <sys/types.h>
 //
 #include <vector>
+////////////////////////////////////////
+#include "messagelistener.h"
 
 #define PORT 6086
 int main(int argc, char const *argv[])
@@ -26,6 +28,7 @@ int main(int argc, char const *argv[])
   int addrlen = sizeof(address);
   char buffer[1024] = {0};
 
+  messagelistener messenger("172.16.4.1");//ideally get this machine addr (not sure 127.0.0.1 will work)
       
   // Creating socket file descriptor
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -96,7 +99,9 @@ int main(int argc, char const *argv[])
      
       FD_ZERO(&rfds);
       FD_SET(server_fd, &rfds); //to listen for new connections
-     
+       //add message listener here
+      FD_SET(messenger.get_socket(), & rfds);
+
       nmax = server_fd+1;
       std::cout<<"nmax : "<<nmax<<std::endl;
         for (std::vector<int>::iterator it = connected.begin(); it != connected.end(); ++it) {
@@ -170,7 +175,11 @@ int main(int argc, char const *argv[])
 	   
 	    break;
 	    }
-	  } 
+	  }
+	}
+	if (FD_ISSET(messenger.get_socket(), &rfds)) {
+	  std::cout<<"message to read"<<std::endl;
+	  messenger.read();
 	}
 
 
