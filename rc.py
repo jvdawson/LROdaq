@@ -38,13 +38,13 @@ s.settimeout(5) #5 seconds ?
 
 while True:
     try:
-        print "try to connect to server"
+        print("try to connect to server")
         s.connect(("127.0.0.1", 6086))
         #get status
         status = get_status()
         break
     except socket.error as msg:
-        print "Caught exception socket.error : %s" % msg
+        print("Caught exception socket.error : %s" % msg)
         time.sleep(10) #delay 10 seconds
     #need to check if server is running, might need to call this again though
 #####################################################
@@ -60,13 +60,13 @@ def rc():
 def do_rc():
 #  check = [ request.forms.get('start') , request.forms.get('stop')];
     if  request.forms.get('start')  == 'true':
-        print "start" #want elseif
+        print("start") #want elseif
         status = startacq()
     if  request.forms.get('stop')  == 'true':
-        print "stop"
+        print("stop")
         status = stopacq()
     if  request.forms.get('abort')  == 'true':
-        print "abort"
+        print("abort")
         status={'state':'abort'}
 
 #do something with the status

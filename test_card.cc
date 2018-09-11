@@ -5,7 +5,7 @@
 int main(void)
 {//127.0.0.1
   card mycard("172.16.4.13");
-  messagelistener messenger("172.16.4.1");
+  //  messagelistener messenger("172.16.4.1");
   // datareceiver mydata;
   
   bool res=false;
@@ -22,9 +22,9 @@ int main(void)
   //in progress 
    res = mycard.SetControlRegisters(4,1,1,0,31,5);
    
-   messenger.read();
-   messenger.read();
-   messenger.read();
+   //   messenger.read();
+   // messenger.read();
+   //messenger.read();
 
 
 

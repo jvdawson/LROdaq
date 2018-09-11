@@ -13,6 +13,7 @@
 #include <vector>
 ////////////////////////////////////////
 #include "messagelistener.h"
+#include "card.h"
 
 #define PORT 6086
 int main(int argc, char const *argv[])
@@ -29,7 +30,8 @@ int main(int argc, char const *argv[])
   char buffer[1024] = {0};
 
   messagelistener messenger("172.16.4.1");//ideally get this machine addr (not sure 127.0.0.1 will work)
-      
+  card mycard("172.16.4.13"); //hardcoded ip address... should get from html form...
+ 
   // Creating socket file descriptor
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
@@ -92,7 +94,7 @@ int main(int argc, char const *argv[])
   tv.tv_sec = 20;
   tv.tv_usec = 0;
   std::vector<int> connected;
- 
+  bool res;
   //NEED loop, [task?], need to accept new connections, and disconnect..  
   while(true) //BREAK OUT
     {
@@ -151,7 +153,8 @@ int main(int argc, char const *argv[])
 	      }else if(strcmp(buffer,"start")==0)
 	      {
 		std::cout<<"client asks to start acquisition"<<std::endl;
-
+		//should get parameters from html/settings file
+		res = mycard.SetControlRegisters(4,1,1,0,31,5);
 		//do something and change state -- assume all OK for now
 
 		send(*it,running_message, strlen(running_message),0 );
@@ -160,7 +163,7 @@ int main(int argc, char const *argv[])
 		std::cout<<"client asks to stop acquisition"<<std::endl;
 
 		//do something and change state --assume all OK for now
-
+		res = mycard.SetControlRegisters(10,0,0,0,15,0);
 		send(*it,ready_message, strlen(ready_message),0 );
 	      }else{
 	      std::cout<<"command unknown"<<std::endl;
