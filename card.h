@@ -1,4 +1,4 @@
-#include "server.h"
+//#include "server.h"
 #include "client.h"
 
 #include <stdint.h> //: uint8_t, uint16_t, uint32_t, and uint64_t

@@ -62,7 +62,7 @@ bool card::isReady()
 
 
   unsigned char rbuffer[1024]; //need to be longer than value read
-  res = comm->cread(rbuffer,NULL,0);//card_address, 325);
+  res = comm->cread(rbuffer,card_address, 325);
   for(int i=0;i<6;i++)
     {
       std::cout<<std::hex<<unsigned(rbuffer[i])<<" ";
