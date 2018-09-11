@@ -6,28 +6,28 @@ import socket
 ##############################
 
 def get_status():
-	"""This function asks the server for its status """
-	s.send('status')
-        data = s.recv(1024)
-        print(data)
-        status={'state':data}
-	return (status)
+    """This function asks the server for its status """
+    s.send('status')
+    data = s.recv(1024)
+    print(data)
+    status={'state':data}
+    return (status)
 
 def startacq():
-	"""This function asks the server to start the acquistion and updates status"""
-        s.send('start')
-	data = s.recv(1024)
-        print(data)
-        status={'state':data}
-	return (status)
+    """This function asks the server to start the acquistion and updates status"""
+    s.send('start')
+    data = s.recv(1024)
+    print(data)
+    status={'state':data}
+    return (status)
 
 def stopacq():
-	"""This function asks the server to start the acquistion and updates status"""
-        s.send('stop')
-	data = s.recv(1024)
-        print(data)
-        status={'state':data}
-	return (status)
+    """This function asks the server to start the acquistion and updates status"""
+    s.send('stop')
+    data = s.recv(1024)
+    print(data)
+    status={'state':data}
+    return (status)
 #s.close()?
 
 #### global ?
@@ -55,14 +55,13 @@ ips = { 'ip': ['172.16.4.13','172.16.4.14','172.16.4.15']}
 ############################################################
 @route('/rc')
 def rc():
-    
     return template('rc.tpl', get_status() ,ips )
 @route('/rc', method='POST')
 def do_rc():
-  #  check = [ request.forms.get('start') , request.forms.get('stop')];
+#  check = [ request.forms.get('start') , request.forms.get('stop')];
     if  request.forms.get('start')  == 'true':
         print "start" #want elseif
-	status = startacq()
+        status = startacq()
     if  request.forms.get('stop')  == 'true':
         print "stop"
         status = stopacq()
