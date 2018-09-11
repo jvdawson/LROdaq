@@ -6,7 +6,7 @@
 //messagelistener -- listens to all AMC cards...
 messagelistener::messagelistener(char *my_addr):client(PORT,my_addr)
 {
-
+  std::cout<<"messagelistener"<<std::endl;
 }
 messagelistener::~messagelistener()
 {
@@ -16,7 +16,7 @@ messagelistener::~messagelistener()
 ////////////////////////////////////////////////////////////////////
 void messagelistener::read()
 {
-  unsigned char buffer[1024];
+  unsigned char buffer[64000];
   int valread = cread(buffer); //remove addr and port from client.h..
   if(valread>0)
     {

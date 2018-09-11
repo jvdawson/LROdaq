@@ -29,6 +29,7 @@ client::~client()
 client::client(int my_p, char *my_addr)
 {
   sock=0;
+  std::cout<<"client: "<<my_p<<" "<<my_addr<<std::endl;
   init(my_p,my_addr);
 }
 bool client::init(int PORT, char *addr)
