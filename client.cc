@@ -7,11 +7,11 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <iostream>
-
+#include <sys/time.h>
 
 //NEED TO ADD ERROR HANDLING...
 
-bool debug=true;
+bool debug=false;//true;
 //#define daqcomputer "172.16.4.1"
 //#define daqport 50325
 //#define daqDport 65000
@@ -36,6 +36,7 @@ bool client::init(int PORT, char *addr)
 {
 
   struct sockaddr_in serv_addr;
+
   memset(&serv_addr, '0', sizeof(serv_addr));
 
   if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
@@ -56,6 +57,10 @@ bool client::init(int PORT, char *addr)
        return false;
     }
   if(debug){std::cout<<"Bound"<<std::endl;}
+
+  /*struct timeval timeout={2,0}; //set timeout for 2 seconds
+  setsockopt(sock,SOL_SOCKET,SO_RCVTIMEO,(char*)&timeout,sizeof(struct timeval));
+  */ //timeout on socket
 
 
 }
@@ -88,17 +93,15 @@ bool client::csend(unsigned char buffer[], int blen, char *addr, int p)
     }
     return false;
 }
-int client::cread(unsigned char buffer[]) 
-{//do I need char *addr, int p??
-  /*   struct sockaddr_in dest_addr;
-  dest_addr.sin_family = AF_INET;
-  dest_addr.sin_port = htons(p);
-  dest_addr.sin_addr.s_addr = inet_addr(addr);//THIS IS THIS IP..              
-  */ 
-  int length = recvfrom( sock, buffer, sizeof(buffer) - 1, 0, NULL, 0 );
+int client::cread(unsigned char buffer[], int buflen) 
+{//buflen: 1472
+  //strlen?
 
+  //  int length = recvfrom( sock, buffer, sizeof(buffer), 0, NULL, NULL);
+  int length = recv(sock,buffer,buflen,0);
   
-  std::cout<<sizeof(buffer)<<std::endl;
+  
+  std::cout<<std::dec<<length<<":"<< sizeof(buffer)<<":"<<buffer<<std::endl;
 
   if(debug){
     std::cout<<"length "<<length<<std::endl;

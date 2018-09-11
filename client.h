@@ -11,8 +11,8 @@ class client
   
 
   bool csend(unsigned char buffer[], int blen, char *addr, int p);
-  int cread(unsigned char buffer[]);
-
+  int cread(unsigned char buffer[], int blen);
+  int GetSock(){ return sock;}
  protected:
 
 
@@ -21,7 +21,8 @@ class client
   int sock;
   
  private:
-  
+
+
   bool init(int p, char *addr);
 
 

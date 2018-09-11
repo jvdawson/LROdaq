@@ -29,7 +29,7 @@ class datareceiver
 
  private:
   double TIMEOUT_s, TIMEOUT_us;
-  void receiver(int port, char *addr );//loop, select, read
+  void myreceiver(int port, char *addr );//loop, select, read
 
   //vector<pthread_t> recevierlist;
   //VECTOR of clients and push? 

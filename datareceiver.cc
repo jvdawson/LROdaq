@@ -15,7 +15,7 @@
 //data sent to udpport (my_p)
 datareceiver::datareceiver()
 { //pass in pipe fd
-  
+  std::cout<<"datareceiver"<<std::endl;
 };
 datareceiver::~datareceiver()
 {
@@ -32,7 +32,7 @@ void datareceiver::AddReceiver(int port, char *addr)
   //just testing for now
   client testclient(port,addr);
   unsigned char buffer[64000];
-  int valread = cread(buffer); //remove addr and port from client.h..
+  int valread = testclient.cread(buffer,64000); //remove addr and port from client.h..
   if(valread>0)
     {
       std::cout<<buffer<<std::endl; //WANT TO SEND THIS SOMEWHERE ELSE
@@ -55,7 +55,7 @@ void datareceiver::myreceiver(int port, char *addr)
 
   FD_ZERO(&rfds);
   FD_SET(thisclient.GetSock(), &rfds); //serverfd new_socket
-  int nmax = sock;
+  int nmax = thisclient.GetSock();
   tv.tv_sec = 2;
   tv.tv_usec = 0;
   bool status=false;
@@ -82,7 +82,7 @@ void datareceiver::myreceiver(int port, char *addr)
             std::cout<<"data "<<std::endl;
             // handle data on this connection
             for(int i=0;i<sizeof(buffer);i++){buffer[i]=0;}
-            status =  thisclient.cread(buffer);
+            status =  thisclient.cread(buffer,4096);
 	    //valread = read(*it, buffer, 1024);
             if(status){
 	      std::cout<<sizeof(buffer)<<std::endl;

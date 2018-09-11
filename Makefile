@@ -30,7 +30,7 @@ test_server: test_server.o server.o
 
 test_card.o: test_card.cc
 	(g++ -c $< -o $@ )
-test_card: test_card.o card.o client.o messagelistener.o
+test_card: test_card.o card.o client.o messagelistener.o datareceiver.o
 	 g++ -o $@  $^
 lrodaq.o: lrodaq.cc
 	(g++ -c $< -o $@ )

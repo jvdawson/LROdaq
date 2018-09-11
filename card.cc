@@ -62,12 +62,13 @@ bool card::isReady()
 
 
   unsigned char rbuffer[1024]; //need to be longer than value read
-  res = comm->cread(rbuffer);
-  for(int i=0;i<6;i++)
+  int length;
+  length = comm->cread(rbuffer,1024);
+  for(int i=0;i<length;i++)
     {
       std::cout<<std::hex<<unsigned(rbuffer[i])<<" ";
     }
-  std::cout<<std::endl;
+  std::cout<<std::dec<<std::endl;
   //find ABCD
   if (rbuffer[4]==0xAB && rbuffer[5]==0xCD)
     {
@@ -131,11 +132,15 @@ bool card::Data_ReadRequest()
   //TIMEOUT? 20 U32_T
   //which port to use?
   unsigned char sbuffer[80]={0};
-  bool res = comm->csend(sbuffer,80,card_address,64000);
+  int res = comm->csend(sbuffer,80,card_address,64000);
 
   unsigned char obuffer[1472]={0};
-  res = dcomm->cread(obuffer);//n'import?
-  std::cout<<"read "<<res<<std::endl;
+  res = dcomm->cread(obuffer,1472);//n'import?
+  std::cout<<"data read: "<<res<<" "<<obuffer<<std::dec<<std::endl;
+  //  res = dcomm->cread(obuffer,1472);//n'import?
+  // std::cout<<"data read: "<<res<<" "<<std::hex<<obuffer<<std::dec<<std::endl;
+
+
   //  unsigned char temp[1024];
   // res = dataserv->read(temp);
   //dataclient?? port ipaddress??
