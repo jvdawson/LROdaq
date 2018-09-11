@@ -1,3 +1,6 @@
+#ifndef MESSAGELISTENER
+#define MESSAGELISTENER
+
 #include "client.h"
 
 class messagelistener: public client
@@ -17,3 +20,4 @@ class messagelistener: public client
 
 
 };
+#endif

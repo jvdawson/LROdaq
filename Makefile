@@ -19,7 +19,8 @@ card.o: card.cc
 
 datareceiver.o: datareceiver.cc
 	(g++ -c -pthread -std=c++11 $< -o $@ )
-
+messagelistener.o: messagelistener.cc
+	(g++ -c -pthread -std=c++11 $< -o $@ )
 test_server.o: test_server.cc
 	(g++ -c $< -o $@ )
 
@@ -29,7 +30,7 @@ test_server: test_server.o server.o
 
 test_card.o: test_card.cc
 	(g++ -c $< -o $@ )
-test_card: test_card.o card.o client.o
+test_card: test_card.o card.o client.o messagelistener.o
 	 g++ -o $@  $^
 lrodaq.o: lrodaq.cc
 	(g++ -c $< -o $@ )

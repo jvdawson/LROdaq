@@ -1,3 +1,5 @@
+#ifndef CARD
+#define CARD
 //#include "server.h"
 #include "client.h"
 
@@ -37,3 +39,4 @@ class card
   client *comm;
   char *card_address;
 };
+#endif

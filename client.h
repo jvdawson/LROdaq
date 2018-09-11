@@ -1,3 +1,5 @@
+#ifndef CLIENT
+#define CLIENT
 
 class client
 {
@@ -9,7 +11,7 @@ class client
   
 
   bool csend(unsigned char buffer[], int blen, char *addr, int p);
-  bool cread(unsigned char buffer[]);
+  int cread(unsigned char buffer[]);
 
  protected:
 
@@ -25,3 +27,4 @@ class client
 
     
 };
+#endif 

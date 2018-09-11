@@ -62,7 +62,7 @@ bool card::isReady()
 
 
   unsigned char rbuffer[1024]; //need to be longer than value read
-  res = comm->cread(rbuffer,card_address, 325);
+  res = comm->cread(rbuffer);
   for(int i=0;i<6;i++)
     {
       std::cout<<std::hex<<unsigned(rbuffer[i])<<" ";
@@ -134,7 +134,7 @@ bool card::Data_ReadRequest()
   bool res = comm->csend(sbuffer,80,card_address,64000);
 
   unsigned char obuffer[1472]={0};
-  res = dcomm->cread(obuffer,NULL,0);//n'import?
+  res = dcomm->cread(obuffer);//n'import?
   std::cout<<"read "<<res<<std::endl;
   //  unsigned char temp[1024];
   // res = dataserv->read(temp);
