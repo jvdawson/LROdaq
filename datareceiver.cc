@@ -16,16 +16,90 @@
 datareceiver::datareceiver()
 { //pass in pipe fd
   std::cout<<"datareceiver"<<std::endl;
+  if (pipe(pipefd) == -1) {
+    perror("pipe");
+    exit(EXIT_FAILURE);
+  }
+
 };
 datareceiver::~datareceiver()
 {
   //  if(mythread){delete mythread;}
-
+  for (std::vector<int>::iterator it = receivers.begin(); it != receivers.end(); ++it) {
+    pthread_join(*it, NULL);
+  }
+  //remove threads from vector?
 }
 ////////////////////
-void datareceiver::AddReceiver(int port, char *addr)
+struct threadinfo {
+  card mycard;
+  int commpipefd[2];
+  int datapipefd[2];
+};
+
+static void *myreceiver(void *arg)//doesn't have to be a member function of class datareceiver...
+{ //with void * could pass in other objects, like pipe to mother code?
+  threadinfo *tinfo = (threadinfo)*arg;
+  //tinfo. like in man pthread_create
+
+  // card* mycard = (card*)arg;
+  //now do something with my card...
+  //communication pipe
+  close(commpipefd[1]); //close writing to comm pipe
+  close(datapipefd[0]); //close reading to data pipe
+
+  // --
+  fd_set rfds,wfds; //read, error, write
+  struct timeval tv; //maybe want to alter timeout during running?
+  int retval;
+
+  FD_ZERO(&rfds);
+  FD_SET(mycard->GetDataSocket(), &rfds); //serverfd new_socket
+  int nmax = mycard->GetDataSocket();
+  tv.tv_sec = 2;
+  tv.tv_usec = 0;
+
+  //REQUEST DATA?
+  mycard->DataReadRequest();
+ while(-1)
+    {
+      FD_ZERO(&rfds);
+      FD_SET(mycard->GetDataSocket(), &rfds); 
+     
+      nmax = mycard->GetDataSocket()+1;
+     
+
+        //TIME OUT 
+      tv.tv_sec = TIMEOUT_s;
+      tv.tv_usec = TIMEOUT_us;
+ 
+      retval = select(nmax+1, &rfds, NULL, NULL, &tv);
+      if (FD_ISSET(mycard.GetDataSocket(), &rfds)) {
+            std::cout<<"data "<<std::endl;
+            // handle data on this connection
+	    mycard->ReadData(); //where does data go? - pipe it to write thread?
+         
+      }
+
+
+    }
+ ///////////////////////////////
+
+}
+
+void datareceiver::AddReceiver(card mycard)
 {
-  //make the thread and add to list?
+  //pthread or thread?
+  pthread_t mynewthread;
+  pthread_create(&mynewthread, NULL, myreceiver, &mycard); //ok?
+  receivers.push_back(mynewthread); //???
+  //  receivers.push_back(pthread_create( &thread1, NULL, print_message_function, (void*) message1);mycard); //ok?
+
+}
+/*void datareceiver::AddReceiver(int port, char *addr)
+{//need to remove receiver from card function[dcomm]
+
+  /*  //make the thread and add to list?
   //call function datareceiver(port,addr)
   //NEED to add a queue or a pipe(?, or directions pipe to writer end?)
 
@@ -37,14 +111,12 @@ void datareceiver::AddReceiver(int port, char *addr)
     {
       std::cout<<buffer<<std::endl; //WANT TO SEND THIS SOMEWHERE ELSE
     }
-}
-void datareceiver::start()
-{
-
-  //  mythread=new thread(myreceiver);
+  
 
 }
-void datareceiver::myreceiver(int port, char *addr)
+*/
+
+/*void datareceiver::myreceiver(int port, char *addr)
 { //and pipe to write out to?
   client thisclient(port,addr); //datacommunication
   //need socket (private -- need function)
@@ -94,3 +166,4 @@ void datareceiver::myreceiver(int port, char *addr)
 
     }
 }
+*/
