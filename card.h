@@ -19,10 +19,11 @@ class card
 			   uint32_t Snbevents);
   bool isReady();
   void Data_ReadRequest();
-  bool ReadData();
+  void ReadData();
   int GetDataSocket();
 
- 
+  unsigned char *databuffer;
+  int datalength;
  protected:
  
   bool send_control_registers();
@@ -30,6 +31,7 @@ class card
 
  private:
 
+  
   //these need to be set, function to set
   uint16_t Trace_Num_Trig;
   bool start_enable, rem_log_msg_enable, soft_reboot;

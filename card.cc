@@ -21,7 +21,7 @@ card::card(char *addr)
   std::cout<<"dcomm"<<std::endl;
   dcomm = new client(udpport, (char*)daq_ip);
 
-
+  databuffer=new unsigned char[1500];
 
 }
 card::~card()
@@ -138,17 +138,17 @@ void card::Data_ReadRequest()
   int res = comm->csend(sbuffer,80,card_address,64000);
   unsigned char obuffer[4]={0}; //according to Cyril it should send back the config.. but where? I only see on messenger...
   res = comm->cread(obuffer,4);
-
   std::cout<<obuffer<<std::endl;
   
 }
 int card::GetDataSocket(){return dcomm->GetSock();}
 
-bool card::ReadData()
+void card::ReadData()
 {
-  unsigned char obuffer[1472]={0};
-  bool res = dcomm->cread(obuffer,1472);//n'import?
-  std::cout<<"data read: "<<res<<" "<<obuffer<<std::dec<<std::endl;
+
+  for(int i=0;i<1500;i++)databuffer[i]=0;
+  datalength = dcomm->cread(databuffer,1500);//n'import?
+  //  std::cout<<"data read: "<<res<<" "<<(char*)databuffer<<std::dec<<std::endl;
   //  res = dcomm->cread(obuffer,1472);//n'import?
   // std::cout<<"data read: "<<res<<" "<<std::hex<<obuffer<<std::dec<<std::endl;
 
@@ -156,7 +156,4 @@ bool card::ReadData()
   //  unsigned char temp[1024];
   // res = dataserv->read(temp);
   //dataclient?? port ipaddress??
-
-
-  return true; //?
 }

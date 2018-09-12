@@ -3,6 +3,13 @@
 //#include "datareceiver.h"
  #include <unistd.h>
 #include <iostream>
+#include <fstream>
+//file the card
+//take some data
+//write to file
+//ignore messages for now...
+//typedef std::basic_ofstream<unsigned char, std::char_traits<unsigned char> > uofstream;
+
 int main(void)
 {//127.0.0.1
   card mycard("172.16.4.13");
@@ -10,7 +17,7 @@ int main(void)
   // datareceiver mydata;
   
   bool res=false;
-  //  res = mycard.isReady(); //Looks OK
+  res = mycard.isReady(); //Looks OK
   /*   bool card::SetControlRegisters(uint16_t STrace_Num_Trig,
 			       bool Sstart_enable, 
 			       bool Srem_log_msg_enable, 
@@ -20,8 +27,10 @@ int main(void)
 			       uint32_t Snbevents)*/
   //Snbevents -- is the number of events to read..
   
-  //in progress 
-  res = mycard.SetControlRegisters(4,1,1,0,31,5);//turned off messenger..
+  //in progress
+  int nevents=5;
+  std::ofstream fbin("data.bin",std::ios::binary);
+  res = mycard.SetControlRegisters(4,1,1,0,31,nevents);//turned off messenger..
    
   //  messenger.read();
   // messenger.read();
@@ -30,15 +39,22 @@ int main(void)
 
 
     mycard.Data_ReadRequest();
-  //  messenger.read();
+
+
+
     messenger.read();
-    std::cout<<"read data "<<std::endl;
-    mycard.ReadData();
-  //  mycard.ReadData();
-  // messenger.read(); 
-
-   //   mydata.AddReceiver(65000, "172.16.4.1");
-  //   res = mycard.SetControlRegisters(10,0,0,0,15,0);
-
+    for(int i=0;i<nevents;i++)
+      {
+	
+	mycard.ReadData();
+	std::cout<<"read event "<<i<<" "<<mycard.datalength<<std::endl;
+        
+	fbin.write((char*)mycard.databuffer,mycard.datalength);
+	
+	std::cout<<std::endl;
+      }
+ 
+    fbin.close();
+    
 return 0;
 }
