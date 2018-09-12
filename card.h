@@ -18,10 +18,13 @@ class card
 			   uint32_t Spre_trig_samples,
 			   uint32_t Snbevents);
   bool isReady();
-  bool Data_ReadRequest();
+  void Data_ReadRequest();
+  bool ReadData();
+  int GetDataSocket();
 
+ 
  protected:
-
+ 
   bool send_control_registers();
 
 

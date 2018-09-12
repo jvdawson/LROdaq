@@ -9,7 +9,7 @@ card::card(char *addr)
   start_enable =false;
   rem_log_msg_enable=false;
   soft_reboot=false;
-  udpport = 65000;//??
+  udpport = 65000;//?? -- needs to be configured..
   nbevents = 100;
   //172.16.4.1 daq
   comm = new client(50325,  (char*)daq_ip);
@@ -127,15 +127,19 @@ bool card::send_control_registers()
    bool res = comm->csend(stotal,4*4+2, card_address, 325);
 }
 /////////////////////////////////////////////////
-bool card::Data_ReadRequest()
+void card::Data_ReadRequest()
 {
   //TIMEOUT? 20 U32_T
   //which port to use?
   unsigned char sbuffer[80]={0};
   int res = comm->csend(sbuffer,80,card_address,64000);
+}
+int card::GetDataSocket(){return dcomm->GetSock();}
 
+bool card::ReadData()
+{
   unsigned char obuffer[1472]={0};
-  res = dcomm->cread(obuffer,1472);//n'import?
+  bool res = dcomm->cread(obuffer,1472);//n'import?
   std::cout<<"data read: "<<res<<" "<<obuffer<<std::dec<<std::endl;
   //  res = dcomm->cread(obuffer,1472);//n'import?
   // std::cout<<"data read: "<<res<<" "<<std::hex<<obuffer<<std::dec<<std::endl;
