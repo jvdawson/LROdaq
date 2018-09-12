@@ -9,15 +9,18 @@ card::card(char *addr)
   start_enable =false;
   rem_log_msg_enable=false;
   soft_reboot=false;
-  udpport = 65000;//?? -- needs to be configured..
+  udpport = 5000;//?? -- needs to be configured..65000
   nbevents = 100;
   //172.16.4.1 daq
+  std::cout<<"comm "<<std::endl;
   comm = new client(50325,  (char*)daq_ip);
+  
   card_address=new char[sizeof(addr)];
   strcpy(card_address, addr);//?
 
+  std::cout<<"dcomm"<<std::endl;
   dcomm = new client(udpport, (char*)daq_ip);
-  //  dataserv=new server(65000);               
+
 
 
 }
@@ -110,7 +113,7 @@ bool card::send_control_registers()
   unsigned char sbuffer[16];
   memcpy(sbuffer,&buffer,16);
 
-  
+  std::cout<<"CONTROL REGISTERS REQUESTED"<<std::endl;
   for(int i=0;i<4*4;i++)std::cout<<std::hex<<unsigned(sbuffer[i])<<" ";
   std::cout<<std::endl;//OK
 
@@ -131,8 +134,13 @@ void card::Data_ReadRequest()
 {
   //TIMEOUT? 20 U32_T
   //which port to use?
-  unsigned char sbuffer[80]={0};
+  unsigned char sbuffer[80]={0};//send ACK to port 64000 of AMC
   int res = comm->csend(sbuffer,80,card_address,64000);
+  unsigned char obuffer[4]={0}; //according to Cyril it should send back the config.. but where? I only see on messenger...
+  res = comm->cread(obuffer,4);
+
+  std::cout<<obuffer<<std::endl;
+  
 }
 int card::GetDataSocket(){return dcomm->GetSock();}
 

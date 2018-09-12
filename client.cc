@@ -101,7 +101,7 @@ int client::cread(unsigned char buffer[], int buflen)
   int length = recv(sock,buffer,buflen,0);
   
   
-  std::cout<<std::dec<<length<<":"<< sizeof(buffer)<<":"<<buffer<<std::endl;
+  std::cout<<"read: "<<std::dec<<length<<":"<<buffer<<std::endl;
 
   if(debug){
     std::cout<<"length "<<length<<std::endl;

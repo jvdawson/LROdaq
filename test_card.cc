@@ -2,10 +2,11 @@
 #include "messagelistener.h"
 //#include "datareceiver.h"
  #include <unistd.h>
+#include <iostream>
 int main(void)
 {//127.0.0.1
   card mycard("172.16.4.13");
-  //  messagelistener messenger("172.16.4.1");
+  messagelistener messenger("172.16.4.1");
   // datareceiver mydata;
   
   bool res=false;
@@ -20,17 +21,24 @@ int main(void)
   //Snbevents -- is the number of events to read..
   
   //in progress 
-   res = mycard.SetControlRegisters(4,1,1,0,31,5);
+  res = mycard.SetControlRegisters(4,1,1,0,31,5);//turned off messenger..
    
-   //   messenger.read();
-   // messenger.read();
-   //messenger.read();
+  //  messenger.read();
+  // messenger.read();
+  // messenger.read();
 
 
 
-   mycard.Data_ReadRequest();
+    mycard.Data_ReadRequest();
+  //  messenger.read();
+    messenger.read();
+    std::cout<<"read data "<<std::endl;
+    mycard.ReadData();
+  //  mycard.ReadData();
+  // messenger.read(); 
+
    //   mydata.AddReceiver(65000, "172.16.4.1");
-   res = mycard.SetControlRegisters(10,0,0,0,15,0);
+  //   res = mycard.SetControlRegisters(10,0,0,0,15,0);
 
 return 0;
 }
