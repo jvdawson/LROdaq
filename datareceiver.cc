@@ -41,10 +41,12 @@ void datareceiver::Stop()
   for (std::vector<struct threadinfo>::iterator it = receivers.begin(); it != receivers.end(); ++it) {
     pthread_join((*it).thread_id, NULL);
   }
+  std::cout<<"writeinfothread_id"<<writerinfo.thread_id<<std::endl;
   //stop all data readers then stop data writer...
   if(writerinfo.thread_id!=0)
     {
-      retval = write( writerinfo.thread_id, buf, strlen(buf));
+      std::cout<<"send exit to writer "<<std::endl;
+      retval = write( writerinfo.commpipefd[1], buf, strlen(buf));
       pthread_join( writerinfo.thread_id, NULL); //do I need that?
     }
 }
@@ -96,7 +98,9 @@ static void *myreceiver(void *arg)
 	if (FD_ISSET(tinfo->mycard->GetDataSocket(), &rfds)) {
             std::cout<<"data from card..."<<std::endl;
             // handle data on this connection
-	    tinfo->mycard->ReadData(); //where does data go? - pipe it to write thread   
+	    tinfo->mycard->ReadData(); //where does data go? - pipe it to write thread
+	    //do I check if I can write or do I block?
+	    cblen = write(tinfo->datapipefd[1], tinfo->mycard->databuffer, tinfo->mycard->datalength);
 	}
 	//COMM PIPE...
 	if (FD_ISSET(tinfo->commpipefd[0], &rfds)) {
@@ -208,6 +212,7 @@ static void *mywriter(void *arg)
 		  if( FD_ISSET( (*it), & rfds))
 		    {//want to read pipe and write to file...
 		      cblen = read((*it), &databuffer, MAXBUFLEN);
+		      std::cout<<"read "<<cblen<<" from pipe"<<std::endl;
 		      //write some kind of card identifier?
 		      bout.write((char*)databuffer,cblen);
 		    }
