@@ -15,7 +15,7 @@
 //data sent to udpport (my_p)
 datareceiver::datareceiver()
 { //pass in pipe fd
-  std::cout<<"datareceiver"<<std::endl;
+  std::cout<<"datareceiver constructed"<<std::endl;
 
 
 };
@@ -30,6 +30,7 @@ datareceiver::~datareceiver()
 ////////////////////
 void datareceiver::Stop()
 {
+  std::cout<<"datareceiver::Stop"<<std::endl;
   int retval;
   char buf[]="EXIT";
   for (std::vector<struct threadinfo>::iterator it = receivers.begin(); it != receivers.end(); ++it) {
@@ -42,9 +43,12 @@ void datareceiver::Stop()
 }
 
 static void *myreceiver(void *arg)
-{ 
-  threadinfo *tinfo = (threadinfo*)arg;
- 
+{
+  std::cout<<"a new thread..."<<arg<<std::endl;
+  struct threadinfo *tinfo = (struct threadinfo*) arg;
+  std::cout<<"socket "<<tinfo<<" "<<tinfo->mycard<<" "<<tinfo->mycard->GetDataSocket()<<std::endl;                
+
+  std::cout<<"tinfo "<<std::endl;
   close(tinfo->commpipefd[1]); //close writing to comm pipe
   close(tinfo->datapipefd[0]); //close reading to data pipe
 
@@ -56,28 +60,37 @@ static void *myreceiver(void *arg)
   
   //timeouts
    //REQUEST DATA? -- could be at request of comm pipe?
-  tinfo->mycard->Data_ReadRequest();
+  //  tinfo->mycard->Data_ReadRequest();
   while(-1)
     {
+      std::cout<<"loop"<<std::endl;
       FD_ZERO(&rfds);
       FD_ZERO(&wfds);
-      FD_SET(tinfo->mycard->GetDataSocket(), &rfds); 
+      std::cout<<"FD_SET"<<std::endl;
+      std::cout<<tinfo->mycard->GetDataSocket()<<std::endl;
+      
+      //FD_SET(tinfo->mycard->GetDataSocket(), &rfds);
+      std::cout<<"pipes"<<std::endl;
       FD_SET(tinfo->commpipefd[0], &rfds);//read from pipe
       FD_SET(tinfo->datapipefd[1], &wfds);//write to pipe
       nmax = tinfo->mycard->GetDataSocket();
       if(tinfo->commpipefd[0]>nmax){nmax = tinfo->commpipefd[0];}
-      if(tinfo->datapipefd[0]>nmax){nmax = tinfo->datapipefd[0];}
+      if(tinfo->datapipefd[1]>nmax){nmax = tinfo->datapipefd[1];}
+      std::cout<<nmax<<std::endl;
+      
       tv.tv_sec = 2;//TIMEOUTs (change whilst running?)
       tv.tv_usec = 0;
 
-      //if select on write, it will always be OK, no timeout...?  
+      //if select on write, it will always be OK, no timeout...?
+      std::cout<<"select.."<<std::endl;
       retval = select(nmax+1, &rfds, NULL, NULL, &tv);
       if (retval == -1){
         perror("select()");        
       }  else if (retval){
+	std::cout<<"data "<<retval<<std::endl;
 	//DATA ON CARD...
 	if (FD_ISSET(tinfo->mycard->GetDataSocket(), &rfds)) {
-            std::cout<<"data "<<std::endl;
+            std::cout<<"data from card..."<<std::endl;
             // handle data on this connection
 	    tinfo->mycard->ReadData(); //where does data go? - pipe it to write thread   
 	}
@@ -103,23 +116,32 @@ static void *myreceiver(void *arg)
   std::cout<<"End..."<<tinfo->thread_id<<std::endl;
 }
 
-void datareceiver::AddReceiver(card mycard)
+void datareceiver::AddReceiver(card *mycard)
 {
-  //pthread or thread?
-  struct threadinfo tinfo;
+  std::cout<<"Add receiver "<<mycard->GetDataSocket()<<std::endl;
+  
+  struct threadinfo *tinfo=new threadinfo();
   //pipes to go!!
-  if (pipe(tinfo.commpipefd) == -1) {
+  if (pipe(tinfo->commpipefd) == -1) {
     perror("comm pipe");
     exit(EXIT_FAILURE);
   }
- if (pipe(tinfo.datapipefd) == -1) {
+  if (pipe(tinfo->datapipefd) == -1) {
     perror("comm pipe");
     exit(EXIT_FAILURE);
   }
-
-  tinfo.thread_id = receivers.size(); 
-  pthread_create(&tinfo.thread_id, NULL, myreceiver, &tinfo); //ok?
-  receivers.push_back(tinfo); //???
+  tinfo->mycard= mycard;
+  //here is still OK
+  std::cout<<"socket "<<tinfo->mycard->GetDataSocket()<<std::endl;
+  tinfo->thread_id = receivers.size();
+  std::cout<<"create thread "<<tinfo<<" "<<tinfo->mycard<<" "<<&mycard<<std::endl;
+  if(pthread_create(&tinfo->thread_id, NULL, myreceiver, tinfo)!=0)
+    {
+      perror("pthread create");
+    }
+  
+  std::cout<<"push back"<<std::endl;
+  receivers.push_back(*tinfo); //???
   // close(tinfo->commpipefd[0]); //unused reading end
   //  close(tinfo->datapipefd[]); //unused writing end
 

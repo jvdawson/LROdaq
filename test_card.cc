@@ -39,13 +39,14 @@ int main(void)
 
 
   //  mycard.Data_ReadRequest();
-  mydata.AddReceiver(mycard);
+  mydata.AddReceiver(&mycard);
 
-  for(int i=0;i<10;i++)
+  /*  for(int i=0;i<10;i++)
     {
       messenger.read();
     }
-  
+  */
+  sleep(10);
   mydata.Stop();
   /*    for(int i=0;i<nevents;i++)
       {

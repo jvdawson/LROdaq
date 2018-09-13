@@ -32,14 +32,15 @@ class datareceiver
 
   //could add directly to thread list here... with port and addr
   //  void AddReceiver(int port, char *addr);
-  void AddReceiver(card mycard);
+  void AddReceiver(card *mycard);
   void Stop();
 
 
  private:
 
   std::vector<struct threadinfo> receivers;
-
+  //  struct threadinfo tinfo;
+ 
 
 };
 

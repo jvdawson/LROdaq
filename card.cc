@@ -20,7 +20,7 @@ card::card(char *addr)
 
   std::cout<<"dcomm"<<std::endl;
   dcomm = new client(udpport, (char*)daq_ip);
-
+  
   databuffer=new unsigned char[1500];
 
 }
@@ -132,6 +132,7 @@ bool card::send_control_registers()
 /////////////////////////////////////////////////
 void card::Data_ReadRequest()
 {
+  std::cout<<"Data Read Request"<<std::endl;
   //TIMEOUT? 20 U32_T
   //which port to use?
   unsigned char sbuffer[80]={0};//send ACK to port 64000 of AMC
@@ -141,11 +142,15 @@ void card::Data_ReadRequest()
   std::cout<<obuffer<<std::endl;
   
 }
-int card::GetDataSocket(){return dcomm->GetSock();}
+int card::GetDataSocket(){
+  std::cout<<"request data socket fd"<<std::endl;
+  return dcomm->GetSock();
+
+}
 
 void card::ReadData()
 {
-
+  std::cout<<"Read Data"<<std::endl;
   for(int i=0;i<1500;i++)databuffer[i]=0;
   datalength = dcomm->cread(databuffer,1500);//n'import?
   //  std::cout<<"data read: "<<res<<" "<<(char*)databuffer<<std::dec<<std::endl;

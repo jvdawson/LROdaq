@@ -1,6 +1,6 @@
 #ifndef CLIENT
 #define CLIENT
-
+#include <iostream>
 class client
 {
 
@@ -12,7 +12,9 @@ class client
 
   bool csend(unsigned char buffer[], int blen, char *addr, int p);
   int cread(unsigned char buffer[], int blen);
-  int GetSock(){ return sock;}
+  int GetSock(){
+    std::cout<<"client: getsock: "<<sock<<std::endl;
+    return sock;}
 
  protected:
 

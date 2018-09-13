@@ -61,7 +61,7 @@ bool client::init(int PORT, char *addr)
   /*struct timeval timeout={2,0}; //set timeout for 2 seconds
   setsockopt(sock,SOL_SOCKET,SO_RCVTIMEO,(char*)&timeout,sizeof(struct timeval));
   */ //timeout on socket
-
+  std::cout<<"sock: "<<sock<<std::endl;
 
 }
 
