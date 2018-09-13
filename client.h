@@ -12,9 +12,7 @@ class client
 
   bool csend(unsigned char buffer[], int blen, char *addr, int p);
   int cread(unsigned char buffer[], int blen);
-  int GetSock(){
-    std::cout<<"client: getsock: "<<sock<<std::endl;
-    return sock;}
+  int GetSock(){return sock;}
 
  protected:
 

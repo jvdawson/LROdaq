@@ -46,7 +46,8 @@ int main(void)
       messenger.read();
     }
   */
-  sleep(10);
+  sleep(1);
+  std::cout<<"main: send stop"<<std::endl;
   mydata.Stop();
   /*    for(int i=0;i<nevents;i++)
       {

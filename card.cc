@@ -143,9 +143,7 @@ void card::Data_ReadRequest()
   
 }
 int card::GetDataSocket(){
-  std::cout<<"request data socket fd"<<std::endl;
   return dcomm->GetSock();
-
 }
 
 void card::ReadData()

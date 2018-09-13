@@ -29,10 +29,10 @@ datareceiver::~datareceiver()
 }
 ////////////////////
 void datareceiver::Stop()
-{
+{//this part isn't working?
   std::cout<<"datareceiver::Stop"<<std::endl;
   int retval;
-  char buf[]="EXIT";
+  char buf[]="EXIT\0"; //NEED TERMINATOR!!!!!
   for (std::vector<struct threadinfo>::iterator it = receivers.begin(); it != receivers.end(); ++it) {
     retval = write( (*it).commpipefd[1], buf,strlen(buf));
   }
@@ -49,8 +49,8 @@ static void *myreceiver(void *arg)
   std::cout<<"socket "<<tinfo<<" "<<tinfo->mycard<<" "<<tinfo->mycard->GetDataSocket()<<std::endl;                
 
   std::cout<<"tinfo "<<std::endl;
-  close(tinfo->commpipefd[1]); //close writing to comm pipe
-  close(tinfo->datapipefd[0]); //close reading to data pipe
+  //  close(tinfo->commpipefd[1]); //close writing to comm pipe
+  // close(tinfo->datapipefd[0]); //close reading to data pipe
 
   // --
   fd_set rfds,wfds; //read, error, write
@@ -68,8 +68,7 @@ static void *myreceiver(void *arg)
       FD_ZERO(&wfds);
       std::cout<<"FD_SET"<<std::endl;
       std::cout<<tinfo->mycard->GetDataSocket()<<std::endl;
-      
-      //FD_SET(tinfo->mycard->GetDataSocket(), &rfds);
+      FD_SET(tinfo->mycard->GetDataSocket(), &rfds);
       std::cout<<"pipes"<<std::endl;
       FD_SET(tinfo->commpipefd[0], &rfds);//read from pipe
       FD_SET(tinfo->datapipefd[1], &wfds);//write to pipe
@@ -87,7 +86,7 @@ static void *myreceiver(void *arg)
       if (retval == -1){
         perror("select()");        
       }  else if (retval){
-	std::cout<<"data "<<retval<<std::endl;
+	std::cout<<"selector returns "<<retval<<std::endl;
 	//DATA ON CARD...
 	if (FD_ISSET(tinfo->mycard->GetDataSocket(), &rfds)) {
             std::cout<<"data from card..."<<std::endl;
@@ -98,13 +97,18 @@ static void *myreceiver(void *arg)
 	if (FD_ISSET(tinfo->commpipefd[0], &rfds)) {
 	  std::cout<<"comm pipe "<<std::endl;
 	  cblen = read(tinfo->commpipefd[0], &commbuffer, 1024); //max 1024
-	  std::cout<<"thread: "<<tinfo->thread_id<<" length: "<<cblen<<" data: "<<commbuffer<<std::endl;//depending on the command
-	  if(strcmp(commbuffer,"EXIT")==0)
+	  std::cout<<"thread: "<<tinfo->thread_id<<" length: "<<cblen<<" data\
+: "<<commbuffer<<std::endl;//depending on the command 
+	  if(cblen>0){
+	    std::cout<<"thread: "<<tinfo->thread_id<<" length: "<<cblen<<" data: "<<commbuffer<<std::endl;//depending on the command
+	    if(strcmp(commbuffer,"EXIT")==0)
 	    {
 	      std::cout<<"leave while loop"<<std::endl;
 	      break;
 	    }
-
+	  }else{
+	    sleep(1);
+	  }
 	}
 
 
@@ -144,8 +148,12 @@ void datareceiver::AddReceiver(card *mycard)
   receivers.push_back(*tinfo); //???
   // close(tinfo->commpipefd[0]); //unused reading end
   //  close(tinfo->datapipefd[]); //unused writing end
-
-
+  /*  sleep(1);
+  std::cout<<"WRITE EXIT..."<<std::endl;
+  int retval = write( tinfo->commpipefd[1], "EXIT\0",strlen("EXIT\0"));
+  
+  std::cout<<"end of addreceiver"<<std::endl;
+  */
   //close ends of pipe?
   //  receivers.push_back(pthread_create( &thread1, NULL, print_message_function, (void*) message1);mycard); //ok?
 
