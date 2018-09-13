@@ -40,7 +40,7 @@ int main(void)
 
   //  mycard.Data_ReadRequest();
   mydata.AddReceiver(&mycard);
-
+  mydata.CreateWriter();
   /*  for(int i=0;i<10;i++)
     {
       messenger.read();

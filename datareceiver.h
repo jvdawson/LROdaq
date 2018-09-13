@@ -20,6 +20,12 @@ struct threadinfo {
   int commpipefd[2];
   int datapipefd[2];
 };
+struct writerthreadinfo {
+  pthread_t thread_id;
+  int commpipefd[2];
+  //needs a list of datasockets to listen to...
+  std::vector<int> datasockets;
+};
 
 class datareceiver
 {
@@ -33,14 +39,17 @@ class datareceiver
   //could add directly to thread list here... with port and addr
   //  void AddReceiver(int port, char *addr);
   void AddReceiver(card *mycard);
+  void CreateWriter();//should pass in a filename?
   void Stop();
 
 
  private:
 
   std::vector<struct threadinfo> receivers;
-  //  struct threadinfo tinfo;
- 
+
+  //datawriter task
+  struct writerthreadinfo writerinfo;
+
 
 };
 
