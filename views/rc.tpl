@@ -5,6 +5,7 @@
 
 <body>
 
+<div>
 <p>
  <form action="/init" method="post">
 
@@ -56,6 +57,6 @@
 </p>
 
   </form>
-
+</div>
 
 </body>

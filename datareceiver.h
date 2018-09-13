@@ -13,6 +13,14 @@
 //WILL HOLD QUEUES (or pipes) for each one
 //MASTER WRITER THREAD? [or all write to a pipe directly to master write thread?]
 
+struct threadinfo {
+  pthread_t thread_id;
+  int       thread_num; 
+  card* mycard;
+  int commpipefd[2];
+  int datapipefd[2];
+};
+
 class datareceiver
 {
 
@@ -25,21 +33,13 @@ class datareceiver
   //could add directly to thread list here... with port and addr
   //  void AddReceiver(int port, char *addr);
   void AddReceiver(card mycard);
-
+  void Stop();
 
 
  private:
-  double TIMEOUT_s, TIMEOUT_us;
-  // void myreceiver(int port, char *addr );//loop, select, read
-  // void* myreceiver(void* mycard); //read request? and then select?
 
-  //vector<pthread_t> recevierlist;
-  //VECTOR of clients and push? 
-  //  vector<client> clientlist;
-  std::vector<pthread_t> receivers;
-  //need list of pipes comm pipe and data pipes
-  //QUEUE or pipe for data Nqueues?
-  int pipefd[2]; //way to contact thread
+  std::vector<struct threadinfo> receivers;
+
 
 };
 

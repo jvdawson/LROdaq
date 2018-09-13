@@ -13,6 +13,7 @@ class client
   bool csend(unsigned char buffer[], int blen, char *addr, int p);
   int cread(unsigned char buffer[], int blen);
   int GetSock(){ return sock;}
+
  protected:
 
 

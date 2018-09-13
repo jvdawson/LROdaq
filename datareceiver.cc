@@ -16,83 +16,115 @@
 datareceiver::datareceiver()
 { //pass in pipe fd
   std::cout<<"datareceiver"<<std::endl;
-  if (pipe(pipefd) == -1) {
-    perror("pipe");
-    exit(EXIT_FAILURE);
-  }
+
 
 };
 datareceiver::~datareceiver()
 {
   //  if(mythread){delete mythread;}
-  for (std::vector<int>::iterator it = receivers.begin(); it != receivers.end(); ++it) {
-    pthread_join(*it, NULL);
-  }
+  /* for (std::vector<struct threadinfo>::iterator it = receivers.begin(); it != receivers.end(); ++it) {
+    pthread_join((*it).thread_id, NULL);
+    }*/ //should empty vector...
   //remove threads from vector?
 }
 ////////////////////
-struct threadinfo {
-  card mycard;
-  int commpipefd[2];
-  int datapipefd[2];
-};
+void datareceiver::Stop()
+{
+  int retval;
+  char buf[]="EXIT";
+  for (std::vector<struct threadinfo>::iterator it = receivers.begin(); it != receivers.end(); ++it) {
+    retval = write( (*it).commpipefd[1], buf,strlen(buf));
+  }
 
-static void *myreceiver(void *arg)//doesn't have to be a member function of class datareceiver...
-{ //with void * could pass in other objects, like pipe to mother code?
-  threadinfo *tinfo = (threadinfo)*arg;
-  //tinfo. like in man pthread_create
+  for (std::vector<struct threadinfo>::iterator it = receivers.begin(); it != receivers.end(); ++it) {
+    pthread_join((*it).thread_id, NULL);
+  }
+}
 
-  // card* mycard = (card*)arg;
-  //now do something with my card...
-  //communication pipe
-  close(commpipefd[1]); //close writing to comm pipe
-  close(datapipefd[0]); //close reading to data pipe
+static void *myreceiver(void *arg)
+{ 
+  threadinfo *tinfo = (threadinfo*)arg;
+ 
+  close(tinfo->commpipefd[1]); //close writing to comm pipe
+  close(tinfo->datapipefd[0]); //close reading to data pipe
 
   // --
   fd_set rfds,wfds; //read, error, write
   struct timeval tv; //maybe want to alter timeout during running?
-  int retval;
-
-  FD_ZERO(&rfds);
-  FD_SET(mycard->GetDataSocket(), &rfds); //serverfd new_socket
-  int nmax = mycard->GetDataSocket();
-  tv.tv_sec = 2;
-  tv.tv_usec = 0;
-
-  //REQUEST DATA?
-  mycard->DataReadRequest();
- while(-1)
+  int retval,nmax,cblen;
+  char commbuffer[1024];
+  
+  //timeouts
+   //REQUEST DATA? -- could be at request of comm pipe?
+  tinfo->mycard->Data_ReadRequest();
+  while(-1)
     {
       FD_ZERO(&rfds);
-      FD_SET(mycard->GetDataSocket(), &rfds); 
-     
-      nmax = mycard->GetDataSocket()+1;
-     
+      FD_ZERO(&wfds);
+      FD_SET(tinfo->mycard->GetDataSocket(), &rfds); 
+      FD_SET(tinfo->commpipefd[0], &rfds);//read from pipe
+      FD_SET(tinfo->datapipefd[1], &wfds);//write to pipe
+      nmax = tinfo->mycard->GetDataSocket();
+      if(tinfo->commpipefd[0]>nmax){nmax = tinfo->commpipefd[0];}
+      if(tinfo->datapipefd[0]>nmax){nmax = tinfo->datapipefd[0];}
+      tv.tv_sec = 2;//TIMEOUTs (change whilst running?)
+      tv.tv_usec = 0;
 
-        //TIME OUT 
-      tv.tv_sec = TIMEOUT_s;
-      tv.tv_usec = TIMEOUT_us;
- 
+      //if select on write, it will always be OK, no timeout...?  
       retval = select(nmax+1, &rfds, NULL, NULL, &tv);
-      if (FD_ISSET(mycard.GetDataSocket(), &rfds)) {
+      if (retval == -1){
+        perror("select()");        
+      }  else if (retval){
+	//DATA ON CARD...
+	if (FD_ISSET(tinfo->mycard->GetDataSocket(), &rfds)) {
             std::cout<<"data "<<std::endl;
             // handle data on this connection
-	    mycard->ReadData(); //where does data go? - pipe it to write thread?
-         
+	    tinfo->mycard->ReadData(); //where does data go? - pipe it to write thread   
+	}
+	//COMM PIPE...
+	if (FD_ISSET(tinfo->commpipefd[0], &rfds)) {
+	  std::cout<<"comm pipe "<<std::endl;
+	  cblen = read(tinfo->commpipefd[0], &commbuffer, 1024); //max 1024
+	  std::cout<<"thread: "<<tinfo->thread_id<<" length: "<<cblen<<" data: "<<commbuffer<<std::endl;//depending on the command
+	  if(strcmp(commbuffer,"EXIT")==0)
+	    {
+	      std::cout<<"leave while loop"<<std::endl;
+	      break;
+	    }
+
+	}
+
+
       }
 
 
     }
  ///////////////////////////////
-
+  std::cout<<"End..."<<tinfo->thread_id<<std::endl;
 }
 
 void datareceiver::AddReceiver(card mycard)
 {
   //pthread or thread?
-  pthread_t mynewthread;
-  pthread_create(&mynewthread, NULL, myreceiver, &mycard); //ok?
-  receivers.push_back(mynewthread); //???
+  struct threadinfo tinfo;
+  //pipes to go!!
+  if (pipe(tinfo.commpipefd) == -1) {
+    perror("comm pipe");
+    exit(EXIT_FAILURE);
+  }
+ if (pipe(tinfo.datapipefd) == -1) {
+    perror("comm pipe");
+    exit(EXIT_FAILURE);
+  }
+
+  tinfo.thread_id = receivers.size(); 
+  pthread_create(&tinfo.thread_id, NULL, myreceiver, &tinfo); //ok?
+  receivers.push_back(tinfo); //???
+  // close(tinfo->commpipefd[0]); //unused reading end
+  //  close(tinfo->datapipefd[]); //unused writing end
+
+
+  //close ends of pipe?
   //  receivers.push_back(pthread_create( &thread1, NULL, print_message_function, (void*) message1);mycard); //ok?
 
 }

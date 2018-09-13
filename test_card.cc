@@ -1,6 +1,6 @@
 #include "card.h"
 #include "messagelistener.h"
-//#include "datareceiver.h"
+#include "datareceiver.h"
  #include <unistd.h>
 #include <iostream>
 #include <fstream>
@@ -14,7 +14,7 @@ int main(void)
 {//127.0.0.1
   card mycard("172.16.4.13");
   messagelistener messenger("172.16.4.1");
-  // datareceiver mydata;
+  datareceiver mydata;
   
   bool res=false;
   res = mycard.isReady(); //Looks OK
@@ -38,12 +38,16 @@ int main(void)
 
 
 
-    mycard.Data_ReadRequest();
+  //  mycard.Data_ReadRequest();
+  mydata.AddReceiver(mycard);
 
-
-
-    messenger.read();
-    for(int i=0;i<nevents;i++)
+  for(int i=0;i<10;i++)
+    {
+      messenger.read();
+    }
+  
+  mydata.Stop();
+  /*    for(int i=0;i<nevents;i++)
       {
 	
 	mycard.ReadData();
@@ -52,7 +56,7 @@ int main(void)
 	fbin.write((char*)mycard.databuffer,mycard.datalength);
 	
 	std::cout<<std::endl;
-      }
+	}*/
  
     fbin.close();
     

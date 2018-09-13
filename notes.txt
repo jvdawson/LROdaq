@@ -1,4 +1,9 @@
 //apcpcwa105
+//still issue on reading data
+//selector working, messager writing to screen
+//to do
+//write configuration file from python rc.py -- read it and set up number of cards in lrodaq [init] etc
+//tidy up lrodaq code? main lrodaq (communication with rc) then call functions [start acquisition, stop acquisition, initialise cards]
 
 
 //trying to follow Claude's labview code

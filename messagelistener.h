@@ -1,6 +1,6 @@
 #ifndef MESSAGELISTENER
 #define MESSAGELISTENER
-
+#include <fstream>
 #include "client.h"
 
 class messagelistener: public client
@@ -16,8 +16,9 @@ class messagelistener: public client
   //redirect service? syslogger? html?
 
  private:
-  //thread?
+  std::ofstream fout;
 
+  
 
 };
 #endif
