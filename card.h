@@ -8,7 +8,7 @@
 class card
 {
  public:
-  card(char *addr);
+  card(char *addr, int nchannels);
   ~card();
 
   bool SetControlRegisters(uint16_t STrace_Num_Trig,
@@ -22,8 +22,16 @@ class card
   void ReadData();
   int GetDataSocket();
 
+  //1024 samples/event/ch
+  //2 bytes per sample
+  //64 channels -- to configure
+  bool isEventComplete();
+  void WriteToPipe(int *pipefd);
+
   unsigned char *databuffer;
-  int datalength;
+  int dindex;
+  int maxlength;
+
  protected:
  
   bool send_control_registers();

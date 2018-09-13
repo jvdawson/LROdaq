@@ -22,15 +22,11 @@ datareceiver::datareceiver()
 };
 datareceiver::~datareceiver()
 {
-  //  if(mythread){delete mythread;}
-  /* for (std::vector<struct threadinfo>::iterator it = receivers.begin(); it != receivers.end(); ++it) {
-    pthread_join((*it).thread_id, NULL);
-    }*/ //should empty vector...
-  //remove threads from vector?
+
 }
 ////////////////////
 void datareceiver::Stop()
-{//this part isn't working?
+{
   std::cout<<"datareceiver::Stop"<<std::endl;
   int retval;
   char buf[]="EXIT\0"; //NEED TERMINATOR!!!!!
@@ -58,7 +54,7 @@ static void *myreceiver(void *arg)
   std::cout<<"socket "<<tinfo<<" "<<tinfo->mycard<<" "<<tinfo->mycard->GetDataSocket()<<std::endl;                
   // -- I should close ends of the pipes that I won't use
   // -- for some reason this is causing me problems...
-
+  // 
   // --
   fd_set rfds,wfds; //read, error, write
   struct timeval tv; //maybe want to alter timeout during running?
@@ -99,8 +95,12 @@ static void *myreceiver(void *arg)
             std::cout<<"data from card..."<<std::endl;
             // handle data on this connection
 	    tinfo->mycard->ReadData(); //where does data go? - pipe it to write thread
+	    //check if event is complete?
+	    if(tinfo->mycard->isEventComplete()){
 	    //do I check if I can write or do I block?
-	    cblen = write(tinfo->datapipefd[1], tinfo->mycard->databuffer, tinfo->mycard->datalength);
+	    //cblen = write(tinfo->datapipefd[1], tinfo->mycard->databuffer, tinfo->mycard->datalength);
+	      tinfo->mycard->WriteToPipe(&tinfo->datapipefd[1]);
+	    }
 	}
 	//COMM PIPE...
 	if (FD_ISSET(tinfo->commpipefd[0], &rfds)) {

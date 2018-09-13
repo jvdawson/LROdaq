@@ -12,7 +12,7 @@
 
 int main(void)
 {//127.0.0.1
-  card mycard("172.16.4.13");
+  card mycard("172.16.4.13", 64); //has 64 channels
   messagelistener messenger("172.16.4.1");
   datareceiver mydata;
   

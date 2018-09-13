@@ -1,8 +1,12 @@
 #include "card.h"
 #include <string.h>
 #include <iostream>
-#define daq_ip "172.16.4.1"
-card::card(char *addr)
+#include <stdio.h>
+#include <unistd.h>
+
+#define daq_ip "172.16.4.1" //--find from system?
+
+card::card(char *addr, int nchannels)
 {
 
   Trace_Num_Trig=200;
@@ -20,17 +24,23 @@ card::card(char *addr)
 
   std::cout<<"dcomm"<<std::endl;
   dcomm = new client(udpport, (char*)daq_ip);
-  
-  databuffer=new unsigned char[1500];
 
+  //1024 samples/event/ch
+  //2 bytes per sample
+  //64 channels -- to configure
+
+ 
+  dindex=0;//empty...
+  maxlength=1024*2*nchannels;
+  databuffer=new unsigned char[maxlength];
+ 
 }
 card::~card()
 {
   delete comm;
   delete dcomm;
-  //  delete controlclient;
-  // delete dataclient;
-  // delete dataserv;
+  delete databuffer;
+
 }
 
 //SETS all control registers and writes them
@@ -55,7 +65,7 @@ bool card::SetControlRegisters(uint16_t STrace_Num_Trig,
 }
 
 bool card::isReady()
-{//PROBLEM... here...
+{
   //array of 20 is U32 ->type cast to U8 [array size is 20*4 U8
   //3 is U16 ->type cast to U8
   unsigned char sbuffer[82]={0}; 
@@ -149,14 +159,31 @@ int card::GetDataSocket(){
 void card::ReadData()
 {
   std::cout<<"Read Data"<<std::endl;
-  for(int i=0;i<1500;i++)databuffer[i]=0;
-  datalength = dcomm->cread(databuffer,1500);//n'import?
-  //  std::cout<<"data read: "<<res<<" "<<(char*)databuffer<<std::dec<<std::endl;
-  //  res = dcomm->cread(obuffer,1472);//n'import?
-  // std::cout<<"data read: "<<res<<" "<<std::hex<<obuffer<<std::dec<<std::endl;
+  int packetsize=0;
+  //datalength
+  packetsize = dcomm->cread(&databuffer[dindex],maxlength);
+  if(dindex+packetsize>maxlength)
+    {
+      perror("total event size greater than maximum");
+    }
+  dindex=dindex+packetsize; //move along index..
 
-
-  //  unsigned char temp[1024];
-  // res = dataserv->read(temp);
-  //dataclient?? port ipaddress??
+  //I expect first UDP 1472, second of 572 * nchannels....
+  //there's a risk of blocking (what if a packet is missing?)
+  
+  
+}
+bool card::isEventComplete()
+{
+  if(dindex==maxlength)
+    {
+      return true;
+    }
+  return false;
+}
+void card::WriteToPipe(int *pipefd)
+{
+  //write the data to the pipe!
+  int cblen = write(*pipefd, databuffer, maxlength);
+  dindex=0;
 }
