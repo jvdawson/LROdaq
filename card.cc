@@ -162,6 +162,7 @@ void card::ReadData()
   int packetsize=0;
   //datalength
   packetsize = dcomm->cread(&databuffer[dindex],maxlength);
+  std::cout<<packetsize<<" "<<dindex<<std::endl;
   if(dindex+packetsize>maxlength)
     {
       perror("total event size greater than maximum");
@@ -183,7 +184,14 @@ bool card::isEventComplete()
 }
 void card::WriteToPipe(int *pipefd)
 {
-  //write the data to the pipe!
-  int cblen = write(*pipefd, databuffer, maxlength);
+  //write the data to the pipe! it's too big to write in one go
+  //max is 64kB or so
+  int nindex = maxlength/2;
+  std::cout<<"write to pipe : "<<maxlength/2<<std::endl;
+  int cblen = write(*pipefd, databuffer, nindex);
+  std::cout<<"wrote "<<cblen<<" to pipe "<<nindex<<std::endl;
+  cblen = write(*pipefd, &databuffer[nindex], nindex);
+  std::cout<<"wrote "<<cblen<<" to pipe "<<nindex<<std::endl;
+ 
   dindex=0;
 }

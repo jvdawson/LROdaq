@@ -29,16 +29,14 @@ int main(void)
   
   //in progress
   int nevents=5;
-  std::ofstream fbin("data.bin",std::ios::binary);
+
   res = mycard.SetControlRegisters(4,1,1,0,31,nevents);//turned off messenger..
    
-  //  messenger.read();
+
   // messenger.read();
-  // messenger.read();
 
 
 
-  //  mycard.Data_ReadRequest();
   mydata.AddReceiver(&mycard);
   mydata.CreateWriter();
   /*  for(int i=0;i<10;i++)
@@ -46,21 +44,14 @@ int main(void)
       messenger.read();
     }
   */
-  sleep(1);
+  while(mydata.GetNumberofEvents()<nevents)
+    {
+      sleep(1);
+    }
   std::cout<<"main: send stop"<<std::endl;
   mydata.Stop();
-  /*    for(int i=0;i<nevents;i++)
-      {
-	
-	mycard.ReadData();
-	std::cout<<"read event "<<i<<" "<<mycard.datalength<<std::endl;
-        
-	fbin.write((char*)mycard.databuffer,mycard.datalength);
-	
-	std::cout<<std::endl;
-	}*/
  
-    fbin.close();
+  
     
 return 0;
 }

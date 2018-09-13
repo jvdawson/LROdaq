@@ -25,6 +25,22 @@ datareceiver::~datareceiver()
 
 }
 ////////////////////
+long datareceiver::GetNumberofEvents()
+{
+  //ask writer function how many events it has received and written?
+ char buf[]="NUMB\0"; //NEED TERMINATOR!!!!!
+ char snum[8]={0};
+ 
+ int retval;
+ if(writerinfo.thread_id!=0)
+    {
+      std::cout<<"ask number of events from writer "<<std::endl;
+      retval = write( writerinfo.commpipefd[1], buf, strlen(buf));
+      retval = read(writerinfo.trigpipefd[0],snum,strlen(snum));
+      std::cout<<"received from writer:"<<snum<<" "<<atol(snum)<<" "<<retval<<std::endl;
+    }
+ return atol(snum);
+}
 void datareceiver::Stop()
 {
   std::cout<<"datareceiver::Stop"<<std::endl;
@@ -59,7 +75,7 @@ static void *myreceiver(void *arg)
   fd_set rfds,wfds; //read, error, write
   struct timeval tv; //maybe want to alter timeout during running?
   int retval,nmax,cblen;
-  char commbuffer[1024];
+  char commbuffer[4];
   
   //timeouts
    //REQUEST DATA? -- could be at request of comm pipe?
@@ -99,6 +115,7 @@ static void *myreceiver(void *arg)
 	    if(tinfo->mycard->isEventComplete()){
 	    //do I check if I can write or do I block?
 	    //cblen = write(tinfo->datapipefd[1], tinfo->mycard->databuffer, tinfo->mycard->datalength);
+	      std::cout<<"event is complete - write to pipe "<<std::endl;
 	      tinfo->mycard->WriteToPipe(&tinfo->datapipefd[1]);
 	    }
 	}
@@ -144,7 +161,7 @@ void datareceiver::AddReceiver(card *mycard)
     exit(EXIT_FAILURE);
   }
   writerinfo.datasockets.push_back(tinfo->datapipefd[0]);//just one end of pipe?
-
+  writerinfo.bsize = mycard->maxlength; 
   tinfo->mycard= mycard;
   //here is still OK
   std::cout<<"socket "<<tinfo->mycard->GetDataSocket()<<std::endl;
@@ -162,7 +179,7 @@ void datareceiver::AddReceiver(card *mycard)
 
 }
 //////////////////////////////////////////////////////////
-#define MAXBUFLEN 65535
+
 static void *mywriter(void *arg)
 {//filename needs to be modified...
   std::cout<<"writer thread..."<<arg<<std::endl;
@@ -176,9 +193,14 @@ static void *mywriter(void *arg)
   fd_set rfds,wfds; //read, error, write
   struct timeval tv; //maybe want to alter timeout during running?
   int retval,nmax,cblen;
-  char commbuffer[1024];
-  char databuffer[MAXBUFLEN];//what is the maximum size??
+  
+  char commbuffer[4]={0};
+  char ocommbuffer[64]={0};
 
+  char *databuffer=new char[tinfo->bsize];//char or unsignedchar?
+  int nevents=0;
+  int halfbuffer=0;
+  
   while(-1)
     {
       std::cout<<"writer loop"<<std::endl;
@@ -193,7 +215,10 @@ static void *mywriter(void *arg)
       std::cout<<"pipe"<<std::endl;
       FD_SET(tinfo->commpipefd[0], &rfds);//read from pipe
       if(tinfo->commpipefd[0]>nmax){nmax = tinfo->commpipefd[0];}
-     
+      //      FD_SET(tinfo->trigpipefd[1], &wfds);//write to pipe                      
+      // if(tinfo->commpipefd[0]>nmax){nmax = tinfo->commpipefd[0];}
+
+
       std::cout<<nmax<<std::endl;
       
       tv.tv_sec = 2;//TIMEOUTs (change whilst running?)
@@ -205,24 +230,29 @@ static void *mywriter(void *arg)
       if (retval == -1){
         perror("select()");        
       } else{
-		std::cout<<"selector returns "<<retval<<std::endl;
+	std::cout<<"selector returns "<<retval<<std::endl;
 	//DATA send down pipe?
-		for (std::vector<int>::iterator it = tinfo->datasockets.begin(); it != tinfo->datasockets.end(); ++it) {
-		  
-		  if( FD_ISSET( (*it), & rfds))
-		    {//want to read pipe and write to file...
-		      cblen = read((*it), &databuffer, MAXBUFLEN);
-		      std::cout<<"read "<<cblen<<" from pipe"<<std::endl;
-		      //write some kind of card identifier?
-		      bout.write((char*)databuffer,cblen);
-		    }
-		}	
-
-	}
+	for (std::vector<int>::iterator it = tinfo->datasockets.begin(); it != tinfo->datasockets.end(); ++it) {
+	  
+	  if( FD_ISSET( (*it), & rfds))
+	    {//want to read pipe and write to file...
+	      halfbuffer=tinfo->bsize/2;
+	      std::cout<<"try to read from pipe: "<<halfbuffer<<std::endl;
+	      cblen = read((*it), databuffer, halfbuffer);
+	      std::cout<<"read "<<cblen<<" from pipe, requested "<<tinfo->bsize<<std::endl;
+	      cblen = read((*it), &databuffer[halfbuffer], halfbuffer);
+	      std::cout<<"read "<<cblen<<" from pipe, requested "<<tinfo->bsize<<std::endl;
+	      //write an identifier or header?
+	      bout.write((char*)databuffer,tinfo->bsize);
+	      nevents++; //could how many events have written
+	    }
+	}	
+	
+      }
 	//COMM PIPE...
 	if (FD_ISSET(tinfo->commpipefd[0], &rfds)) {
 	  std::cout<<"comm pipe "<<std::endl;
-	  cblen = read(tinfo->commpipefd[0], &commbuffer, 1024); //max 1024
+	  cblen = read(tinfo->commpipefd[0], &commbuffer, 4); //max 1024
 	  std::cout<<"writer thread: "<<" length: "<<cblen<<" data\
 : "<<commbuffer<<std::endl;//depending on the command 
 	  if(cblen>0){
@@ -231,6 +261,15 @@ static void *mywriter(void *arg)
 		std::cout<<"leave while loop"<<std::endl;
 		break;
 	      }
+	     if(strcmp(commbuffer,"NUMB")==0)
+              {
+                std::cout<<"request number of events: "<<nevents<<std::endl;
+		sprintf(ocommbuffer,"%d\0",nevents);
+		std::cout<<ocommbuffer<<std::endl;
+		write(tinfo->trigpipefd[1],ocommbuffer,strlen(ocommbuffer));
+              }
+
+
 	  }else{//A problem??
 	    sleep(1);
 	  }
@@ -250,6 +289,11 @@ void datareceiver::CreateWriter()
     perror("Writer comm pipe");
     exit(EXIT_FAILURE);
   }
+  if (pipe(writerinfo.trigpipefd) == -1) {
+    perror("Writer trig pipe");
+    exit(EXIT_FAILURE);
+  }
+
   //////
  std::cout<<"create writer thread "<<std::endl;
   if(pthread_create(&writerinfo.thread_id, NULL, mywriter, &writerinfo)!=0)
