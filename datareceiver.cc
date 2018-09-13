@@ -47,10 +47,8 @@ static void *myreceiver(void *arg)
   std::cout<<"a new thread..."<<arg<<std::endl;
   struct threadinfo *tinfo = (struct threadinfo*) arg;
   std::cout<<"socket "<<tinfo<<" "<<tinfo->mycard<<" "<<tinfo->mycard->GetDataSocket()<<std::endl;                
-
-  std::cout<<"tinfo "<<std::endl;
-  //  close(tinfo->commpipefd[1]); //close writing to comm pipe
-  // close(tinfo->datapipefd[0]); //close reading to data pipe
+  // -- I should close ends of the pipes that I won't use
+  // -- for some reason this is causing me problems...
 
   // --
   fd_set rfds,wfds; //read, error, write
@@ -60,7 +58,7 @@ static void *myreceiver(void *arg)
   
   //timeouts
    //REQUEST DATA? -- could be at request of comm pipe?
-  //  tinfo->mycard->Data_ReadRequest();
+  tinfo->mycard->Data_ReadRequest();
   while(-1)
     {
       std::cout<<"loop"<<std::endl;
