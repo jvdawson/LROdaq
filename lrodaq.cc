@@ -13,6 +13,7 @@
 #include <vector>
 ////////////////////////////////////////
 #include "messagelistener.h"
+#include "datareceiver.h"
 #include "card.h"
 
 #define PORT 6086
@@ -30,8 +31,13 @@ int main(int argc, char const *argv[])
   char buffer[1024] = {0};
 
   messagelistener messenger("172.16.4.1");//ideally get this machine addr (not sure 127.0.0.1 will work)
-  card mycard("172.16.4.13"); //hardcoded ip address... should get from html form...
- 
+  card mycard("172.16.4.13",64); //hardcoded ip address... should get from html form...
+  //eventually have a list of cards...
+  datareceiver mydata;
+  int nevents = 5; //the number of events to take -- needs to be configurable
+  mydata.AddReceiver(&mycard);
+  mydata.CreateWriter();
+
   // Creating socket file descriptor
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
@@ -154,16 +160,18 @@ int main(int argc, char const *argv[])
 	      {
 		std::cout<<"client asks to start acquisition"<<std::endl;
 		//should get parameters from html/settings file
-		res = mycard.SetControlRegisters(4,1,1,0,31,5);
+		res = mycard.SetControlRegisters(4,1,1,0,31,nevents);
+
 		//do something and change state -- assume all OK for now
 
 		send(*it,running_message, strlen(running_message),0 );
 	      }else if(strcmp(buffer,"stop")==0)
 	      {
 		std::cout<<"client asks to stop acquisition"<<std::endl;
-
+		//CARD ACTUALLY STOPS TAKING DATA AND SENDING DATA WHEN nevents HAVE BEEN SENT.. NEED TO RETHINK THIS PART....
 		//do something and change state --assume all OK for now
-		res = mycard.SetControlRegisters(10,0,0,0,15,0);
+		//		res = mycard.SetControlRegisters(10,0,0,0,15,0);
+		mydata.Stop();
 		send(*it,ready_message, strlen(ready_message),0 );
 	      }else{
 	      std::cout<<"command unknown"<<std::endl;
