@@ -74,4 +74,5 @@ def do_rc():
     return template('rc.tpl',status , ips) #WORKING!!!
 #main
 # NEED TO WORK ON FLOW -- going backwards and forwards..
-run(host='localhost', port=8080)
+run(host='apcpcwa105', port=8080)
+#localhost

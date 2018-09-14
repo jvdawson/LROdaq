@@ -33,6 +33,11 @@ int main(int argc, char const *argv[])
   messagelistener messenger("172.16.4.1");//ideally get this machine addr (not sure 127.0.0.1 will work)
   card mycard("172.16.4.13",64); //hardcoded ip address... should get from html form...
   //eventually have a list of cards...
+
+  while(!mycard.isReady())
+    {
+      sleep(5); //wait until card responds?
+    }
   datareceiver mydata;
   int nevents = 5; //the number of events to take -- needs to be configurable
   mydata.AddReceiver(&mycard);
