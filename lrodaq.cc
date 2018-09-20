@@ -39,7 +39,7 @@ int main(int argc, char const *argv[])
       sleep(5); //wait until card responds?
     }
   datareceiver mydata;
-  int nevents = 5; //the number of events to take -- needs to be configurable
+  int nevents = 1000; //the number of events to take -- needs to be configurable
   mydata.AddReceiver(&mycard);
   mydata.CreateWriter();
 

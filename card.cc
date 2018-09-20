@@ -13,7 +13,7 @@ card::card(char *addr, int nchannels)
   start_enable =false;
   rem_log_msg_enable=false;
   soft_reboot=false;
-  udpport = 5000;//?? -- needs to be configured..65000
+  udpport = 5050; //5000;//?? -- needs to be configured..65000
   nbevents = 100;
   //172.16.4.1 daq
   std::cout<<"comm "<<std::endl;
