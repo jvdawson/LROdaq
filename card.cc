@@ -14,7 +14,8 @@ card::card(char *addr, int nchannels)
   start_enable =false;
   rem_log_msg_enable=false;
   soft_reboot=false;
-  udpport = 5050; //5000;//?? -- needs to be configured..65000
+  
+  
   nbevents = 100;
   //172.16.4.1 daq
   char daq_ip[100];
@@ -27,8 +28,13 @@ card::card(char *addr, int nchannels)
   
   card_address=new char[sizeof(addr)];
   strcpy(card_address, addr);//?
-
-  std::cout<<"dcomm"<<std::endl;
+  std::cout<<"scanf "<<card_address<<std::endl;
+  int dum[4];
+  sscanf(card_address,"%d.%d.%d.%d",&dum[0],&dum[1],&dum[2],&dum[3]);
+  std::cout<<dum[0]<<" "<<dum[1]<<" "<<dum[2]<<" "<<dum[3]<<std::endl;
+  udpport = 5000 + dum[3];
+  
+  std::cout<<"dcomm setting udpport to "<<udpport<<std::endl;
   dcomm = new client(udpport, (char*)daq_ip);
 
   //1024 samples/event/ch
