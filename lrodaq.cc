@@ -11,7 +11,10 @@
 #include <sys/types.h>
 //
 #include <vector>
+//
+
 ////////////////////////////////////////
+
 #include "messagelistener.h"
 #include "datareceiver.h"
 #include "card.h"
@@ -30,7 +33,13 @@ int main(int argc, char const *argv[])
   int addrlen = sizeof(address);
   char buffer[1024] = {0};
 
-  messagelistener messenger("172.16.4.1");//ideally get this machine addr (not sure 127.0.0.1 will work)
+  char lrodaq_ip[100];
+  if (get_ip(lrodaq_ip)!=0)
+    {
+      perror("failed to get IP address of LRODAQ machine");
+    }
+  
+  messagelistener messenger(lrodaq_ip);//ideally get this machine addr (not sure 127.0.0.1 will work)
   card mycard("172.16.4.13",64); //hardcoded ip address... should get from html form...
   //eventually have a list of cards...
 

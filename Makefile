@@ -17,6 +17,10 @@ test_client: test_client.o client.o
 card.o: card.cc
 	(g++ -c $< -o $@ )
 
+getipaddress.o: getipaddress.cc
+	(g++ -c $< -o $@ )
+
+
 datareceiver.o: datareceiver.cc
 	(g++ -c -pthread -std=c++11 $< -o $@ )
 messagelistener.o: messagelistener.cc
@@ -37,5 +41,5 @@ test_card: test_card.o card.o client.o messagelistener.o datareceiver.o
 
 lrodaq.o: lrodaq.cc
 	(g++ -c $< -o $@ )
-lrodaq: lrodaq.o  card.o client.o messagelistener.o datareceiver.o
+lrodaq: lrodaq.o  card.o client.o messagelistener.o datareceiver.o getipaddress.o
 	 g++ -lpthread -o $@  $^

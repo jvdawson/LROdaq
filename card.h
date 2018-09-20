@@ -2,6 +2,7 @@
 #define CARD
 //#include "server.h"
 #include "client.h"
+#include "getipaddress.h"
 
 #include <stdint.h> //: uint8_t, uint16_t, uint32_t, and uint64_t
 
@@ -31,7 +32,7 @@ class card
   unsigned char *databuffer;
   int dindex;
   int maxlength;
-
+  char daq_ip[100];
  protected:
  
   bool send_control_registers();

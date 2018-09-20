@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define daq_ip "172.16.4.1" //--find from system?
+
+
 
 card::card(char *addr, int nchannels)
 {
@@ -16,6 +17,11 @@ card::card(char *addr, int nchannels)
   udpport = 5050; //5000;//?? -- needs to be configured..65000
   nbevents = 100;
   //172.16.4.1 daq
+  char daq_ip[100];
+  if(get_ip(daq_ip)!=0)
+    {
+      perror("failed to get LRODAQ ip address ");
+    }
   std::cout<<"comm "<<std::endl;
   comm = new client(50325,  (char*)daq_ip);
   
